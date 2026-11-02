@@ -11,7 +11,9 @@
 
     <div class="flex items-center gap-4">
       <button type="button" class="cg-btn cg-btn--ghost cg-btn--sm">Entrar</button>
-      <button type="button" class="cg-btn cg-btn--primary cg-btn--sm" routerLink="/createacc">Criar conta</button>
+      <button type="button" class="cg-btn cg-btn--primary cg-btn--sm" routerLink="/createacc">
+        <svg lucideArrowUpRight class="cg-icon-arrow" aria-hidden="true"></svg>
+        Criar conta</button>
     </div>
   </header>
 
@@ -34,6 +36,7 @@
 
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-4">
         <button type="button" class="cg-btn cg-btn--primary cg-btn--lg" routerLink="/createacc">
+          <svg lucideArrowUpRight class="cg-icon-arrow" aria-hidden="true"></svg>
           Criar minha conta
         </button>
         <button type="button" class="cg-btn cg-btn--outline cg-btn--lg">
@@ -81,7 +84,9 @@
         <div class="cg-review-card absolute bottom-4 left-6 right-6 p-4 z-30 space-y-2">
           <div class="flex items-center justify-between text-xs">
             <span class="cg-review-card__author">Raphael · Sessão de sexta</span>
-            <span class="cg-rating">9/10</span>
+            <span class="cg-rating">
+              <svg lucideStar class="cg-icon-star" aria-hidden="true" style="display: inline-flex; align-items: center;"></svg>
+              9/10</span>
           </div>
           <p class="cg-review-card__comment">
             "Dias Perfeitos me fez olhar diferente para a rotina..."

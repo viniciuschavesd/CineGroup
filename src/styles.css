@@ -365,3 +365,16 @@
     gap: 0.75rem;
   }
 }
+
+@layer components {
+  /* Ícone de seta com animação */
+  .cg-icon-arrow {
+    width: 1rem;
+    height: 1rem;
+    transition: transform 200ms ease;
+  }
+
+  .group:hover .cg-icon-arrow {
+    transform: translate(0.125rem, -0.125rem);
+  }
+}

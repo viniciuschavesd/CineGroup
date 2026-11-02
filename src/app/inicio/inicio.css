@@ -109,6 +109,9 @@
   font-size: 0.625rem;
   font-weight: 800;
   padding: 0.2rem 0.5rem;
+  display: flex;
+  gap: 0.25em;
+  align-items: center;
 }
 
 @media (max-width: 640px) {
@@ -124,4 +127,14 @@
     left: 0.75rem;
     right: 0.75rem;
   }
+}
+@layer components {
+  /* Ícone de seta com animação */
+  .cg-icon-star {
+    width: 0.8rem;
+    height: 0.8rem;
+    stroke-width: 3;
+    fill: var(--cg-color-text);
+  }
+
 }
