@@ -1,15 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import 'tailwindcss';
-/* =========================================================
-   CINEGROUP — DESIGN SYSTEM GLOBAL
-   Importe este arquivo em src/styles.css para reutilizar
-   cores, tipografia, botões e componentes em outras páginas.
-   ========================================================= */
 
 :root {
   /* Cores */
-  --cg-color-background: #121212;
+  --cg-color-background: #171916;
   --cg-color-surface: #1b1b1b;
   --cg-color-surface-raised: #242424;
   --cg-color-surface-overlay: #080808;
@@ -21,10 +16,10 @@
   --cg-color-text-muted: #9ca3af;
   --cg-color-text-subtle: #6b7280;
 
-  --cg-color-primary: #a3e635;
-  --cg-color-primary-hover: #bef264;
-  --cg-color-primary-active: #84cc16;
-  --cg-color-primary-soft: rgb(163 230 53 / 10%);
+  --cg-color-primary: #bee87b;
+  --cg-color-primary-hover: #a1be74;
+  --cg-color-primary-active: #a9d962;
+  --cg-color-primary-soft: rgb(190 232 123 / 10%);
   --cg-color-on-primary: #11140b;
 
   /* Tipografia */
@@ -67,6 +62,7 @@
 
 .cg-brand__dot {
   color: var(--cg-color-primary);
+  size : 1.5rem;
 }
 
 .cg-brand--footer {

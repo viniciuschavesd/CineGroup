@@ -1,9 +1,4 @@
-/* =========================================================
-   CINEGROUP — ESTILOS ESPECÍFICOS DA LANDING PAGE
-   Regras de composição visual que não precisam ser globais.
-   ========================================================= */
-
-/* Banner de curadoria */
+/* Banner de curator */
 .cg-curation-banner {
   background: linear-gradient(
     105deg,

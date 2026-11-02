@@ -1,8 +1,8 @@
 <div class="cg-page min-h-screen flex flex-col justify-between">
   <!-- Header / Navbar -->
-  <header class="max-w-7xl mx-auto w-full px-6 py-6 flex justify-between items-center">
+  <header class="max-w-7xl mx-auto w-full px-6 py-6 flex justify-between border-b border-[#bee87b] items-center">
     <a href="#inicio" class="cg-brand" aria-label="CineGroup - início">
-      cinegroup<span class="cg-brand__dot">.</span>
+      cinegroup <span class="cg-brand__dot">.</span>
     </a>
 
     <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
@@ -11,7 +11,7 @@
 
     <div class="flex items-center gap-4">
       <button type="button" class="cg-btn cg-btn--ghost cg-btn--sm">Entrar</button>
-      <button type="button" class="cg-btn cg-btn--primary cg-btn--sm">Criar conta</button>
+      <button type="button" class="cg-btn cg-btn--primary cg-btn--sm" routerLink="/createacc">Criar conta</button>
     </div>
   </header>
 
@@ -33,7 +33,7 @@
       </p>
 
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-4">
-        <button type="button" class="cg-btn cg-btn--primary cg-btn--lg">
+        <button type="button" class="cg-btn cg-btn--primary cg-btn--lg" routerLink="/createacc">
           Criar minha conta
         </button>
         <button type="button" class="cg-btn cg-btn--outline cg-btn--lg">
@@ -48,6 +48,7 @@
     </div>
 
     <!-- Hero Right Column (Posters Showcase & Review Bubble) -->
+  <div class="bg-[#18181b] border border-gray-800/80 rounded-2xl p-8 relative flex flex-col justify-between shadow-2xl overflow-hidden">
     <div class="relative flex justify-center items-center py-8">
       <div class="relative w-full max-w-md h-[420px]">
         <!-- Card 1: Aftersun -->
@@ -79,7 +80,7 @@
         <!-- Comment Overlay Bubble -->
         <div class="cg-review-card absolute bottom-4 left-6 right-6 p-4 z-30 space-y-2">
           <div class="flex items-center justify-between text-xs">
-            <span class="cg-review-card__author">Rafael · Sessão de sexta</span>
+            <span class="cg-review-card__author">Raphael · Sessão de sexta</span>
             <span class="cg-rating">9/10</span>
           </div>
           <p class="cg-review-card__comment">
@@ -88,6 +89,7 @@
         </div>
       </div>
     </div>
+  </div>
   </main>
 
   <!-- Features Section -->
