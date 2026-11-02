@@ -131,10 +131,10 @@
 @layer components {
   /* Ícone de seta com animação */
   .cg-icon-star {
-    width: 0.8rem;
-    height: 0.8rem;
+    width: 0.6rem;
+    height: 0.6rem;
     stroke-width: 3;
-    fill: var(--cg-color-text);
+    fill: var(--cg-color-on-primary);
   }
 
 }
