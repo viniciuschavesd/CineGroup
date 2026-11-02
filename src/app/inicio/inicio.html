@@ -1,0 +1,194 @@
+<div class="cg-page min-h-screen flex flex-col justify-between">
+  <!-- Header / Navbar -->
+  <header class="max-w-7xl mx-auto w-full px-6 py-6 flex justify-between items-center">
+    <a href="#inicio" class="cg-brand" aria-label="CineGroup - início">
+      cinegroup<span class="cg-brand__dot">.</span>
+    </a>
+
+    <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
+      <a href="#como-funciona" class="cg-link">Como funciona</a>
+    </nav>
+
+    <div class="flex items-center gap-4">
+      <button type="button" class="cg-btn cg-btn--ghost cg-btn--sm">Entrar</button>
+      <button type="button" class="cg-btn cg-btn--primary cg-btn--sm">Criar conta</button>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main id="inicio" class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+    <!-- Hero Left Column -->
+    <div class="space-y-6">
+      <div class="cg-eyebrow cg-eyebrow--pill">
+        Seu cineclube, sem sair da conversa
+      </div>
+
+      <h1 class="cg-heading cg-heading--hero">
+        O filme acaba. <br />
+        <span class="cg-heading__muted cg-heading__italic">A conversa continua.</span>
+      </h1>
+
+      <p class="cg-copy cg-copy--lead max-w-md">
+        Uma lista para os filmes que você quer ver. Um grupo para trocar ideias com quem você gosta. O cinema ganha outro sentido quando é compartilhado.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-4">
+        <button type="button" class="cg-btn cg-btn--primary cg-btn--lg">
+          Criar minha conta
+        </button>
+        <button type="button" class="cg-btn cg-btn--outline cg-btn--lg">
+          Já tenho conta
+        </button>
+      </div>
+
+      <div class="cg-trust-row pt-6">
+        <span class="cg-check-item"><span class="cg-check-icon">✓</span> Gratuito para começar</span>
+        <span class="cg-check-item"><span class="cg-check-icon">✓</span> Simples de fazer parte</span>
+      </div>
+    </div>
+
+    <!-- Hero Right Column (Posters Showcase & Review Bubble) -->
+    <div class="relative flex justify-center items-center py-8">
+      <div class="relative w-full max-w-md h-[420px]">
+        <!-- Card 1: Aftersun -->
+        <div class="cg-poster-card cg-poster-card--left absolute top-0 left-4 w-52 h-72 rounded-xl overflow-hidden">
+          <img
+            src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600"
+            alt="Aftersun"
+            class="cg-poster-card__image w-full h-full object-cover"
+          />
+          <div class="cg-poster-card__caption absolute bottom-0 inset-x-0 p-4">
+            <span class="cg-poster-card__eyebrow block">UM FILME DE CHARLOTTE WELLS</span>
+            <h3 class="cg-poster-card__title">Aftersun</h3>
+          </div>
+        </div>
+
+        <!-- Card 2: Dias Perfeitos -->
+        <div class="cg-poster-card cg-poster-card--right absolute top-8 right-4 w-56 h-80 rounded-xl overflow-hidden">
+          <img
+            src="https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=600"
+            alt="Dias Perfeitos"
+            class="cg-poster-card__image w-full h-full object-cover"
+          />
+          <div class="cg-poster-card__caption absolute bottom-0 inset-x-0 p-4">
+            <span class="cg-poster-card__eyebrow block">UM FILME DE WIM WENDERS</span>
+            <h3 class="cg-poster-card__title cg-poster-card__title--large">Dias Perfeitos</h3>
+          </div>
+        </div>
+
+        <!-- Comment Overlay Bubble -->
+        <div class="cg-review-card absolute bottom-4 left-6 right-6 p-4 z-30 space-y-2">
+          <div class="flex items-center justify-between text-xs">
+            <span class="cg-review-card__author">Rafael · Sessão de sexta</span>
+            <span class="cg-rating">9/10</span>
+          </div>
+          <p class="cg-review-card__comment">
+            "Dias Perfeitos me fez olhar diferente para a rotina..."
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Features Section -->
+  <section id="como-funciona" class="cg-section-divider max-w-7xl mx-auto px-6 py-16 w-full">
+    <div class="text-center max-w-xl mx-auto mb-12 space-y-2">
+      <span class="cg-eyebrow">Sem complicação, sem roteiro</span>
+      <h2 class="cg-heading cg-heading--section">Três cenas. Muitas descobertas.</h2>
+      <p class="cg-copy cg-copy--small">Do "preciso ver esse" ao "vamos falar sobre esse final?"</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Feature 1 -->
+      <article class="cg-card cg-card--feature">
+        <span class="cg-feature-number">01</span>
+        <h3 class="cg-card__title">Guarde o próximo play.</h3>
+        <p class="cg-copy cg-copy--small">
+          Monte sua lista, organize a ordem e marque o que já viu. Aquela indicação não se perde mais.
+        </p>
+      </article>
+
+      <!-- Feature 2 -->
+      <article class="cg-card cg-card--feature">
+        <span class="cg-feature-number">02</span>
+        <h3 class="cg-card__title">Reúna sua turma.</h3>
+        <p class="cg-copy cg-copy--small">
+          Crie um grupo, convide seus amigos e tenha um lugar só para as descobertas de vocês.
+        </p>
+      </article>
+
+      <!-- Feature 3 -->
+      <article class="cg-card cg-card--feature">
+        <span class="cg-feature-number">03</span>
+        <h3 class="cg-card__title">Continue a conversa.</h3>
+        <p class="cg-copy cg-copy--small">
+          Compartilhe o que assistiu, dê sua nota e conte o que achou. Toda opinião abre outra sessão.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Curatorship Banner Section -->
+  <section class="max-w-7xl mx-auto px-6 py-12 w-full">
+    <div class="cg-curation-banner rounded-2xl p-8 md:p-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+      <div class="space-y-4">
+        <span class="cg-eyebrow">A melhor curadoria é a sua</span>
+        <h2 class="cg-heading cg-heading--section cg-heading--curation">
+          Seu gosto é pessoal. <br />
+          <span class="cg-heading__muted cg-heading__italic">A descoberta pode ser coletiva.</span>
+        </h2>
+        <p class="cg-copy cg-copy--small">
+          Não é sobre concordar em tudo. É sobre encontrar o próximo favorito na lista de alguém que você conhece.
+        </p>
+        <div class="cg-highlight pt-2">
+          <span class="cg-check-icon">✓</span> Sua lista e seus grupos, no mesmo lugar.
+        </div>
+      </div>
+
+      <!-- Group Preview Card -->
+      <div class="cg-card cg-card--preview rounded-xl p-6 space-y-4">
+        <div class="flex justify-between items-center">
+          <div>
+            <h4 class="cg-card__title cg-card__title--small">Sessão de sexta</h4>
+            <span class="cg-copy cg-copy--micro">4 amigos, muitos pontos de vista</span>
+          </div>
+          <span class="cg-pill cg-pill--muted">Grupo ativo</span>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 pt-2">
+          <div class="cg-film-chip">Dias Perfeitos</div>
+          <div class="cg-film-chip">Aftersun</div>
+          <div class="cg-film-chip">Vidas Passadas</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="max-w-7xl mx-auto px-6 py-16 text-center space-y-6 w-full">
+    <span class="cg-eyebrow">Os créditos são só o começo</span>
+    <h2 class="cg-heading cg-heading--cta">Qual filme vai render a próxima conversa?</h2>
+    <p class="cg-copy cg-copy--small max-w-md mx-auto">
+      Crie sua conta e chame sua turma para o CineGroup.
+    </p>
+    <div class="pt-2">
+      <button type="button" class="cg-btn cg-btn--primary cg-btn--lg">
+        Começar meu cineclube
+      </button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="cg-footer py-8 px-6">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-xs">
+      <a href="#inicio" class="cg-brand cg-brand--footer" aria-label="CineGroup - início">
+        cinegroup<span class="cg-brand__dot">.</span>
+      </a>
+      <div class="flex gap-6">
+        <a href="#" class="cg-link">Privacidade</a>
+        <a href="#" class="cg-link">Termos de uso</a>
+      </div>
+    </div>
+  </footer>
+</div>
+

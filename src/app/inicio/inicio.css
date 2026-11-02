@@ -1,0 +1,132 @@
+/* =========================================================
+   CINEGROUP — ESTILOS ESPECÍFICOS DA LANDING PAGE
+   Regras de composição visual que não precisam ser globais.
+   ========================================================= */
+
+/* Banner de curadoria */
+.cg-curation-banner {
+  background: linear-gradient(
+    105deg,
+    var(--cg-color-surface) 0%,
+    var(--cg-color-surface) 58%,
+    #242424 100%
+  );
+  border: 1px solid var(--cg-color-border);
+}
+
+.cg-heading--curation {
+  line-height: 1.35;
+}
+
+/* Prévia dos filmes no card do grupo */
+.cg-film-chip {
+  background: rgb(55 65 81 / 35%);
+  border: 1px solid rgb(75 85 99 / 50%);
+  border-radius: var(--cg-radius-md);
+  color: var(--cg-color-text-secondary);
+  font-size: 0.625rem;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+/* Pôsteres do hero */
+.cg-poster-card {
+  background: var(--cg-color-surface);
+  border: 1px solid rgb(64 64 64 / 70%);
+  box-shadow: var(--cg-shadow-card);
+  transition:
+    transform var(--cg-transition-normal),
+    border-color var(--cg-transition-normal),
+    z-index var(--cg-transition-normal);
+}
+
+.cg-poster-card--left {
+  transform: rotate(-6deg);
+}
+
+.cg-poster-card--right {
+  transform: rotate(3deg);
+}
+
+.cg-poster-card:hover {
+  border-color: rgb(163 230 53 / 45%);
+  transform: rotate(0) translateY(-3px);
+  z-index: 20;
+}
+
+.cg-poster-card__image {
+  filter: brightness(0.75);
+}
+
+.cg-poster-card__caption {
+  background: linear-gradient(
+    to top,
+    rgb(0 0 0 / 98%),
+    rgb(0 0 0 / 60%) 58%,
+    transparent
+  );
+}
+
+.cg-poster-card__eyebrow {
+  color: var(--cg-color-text-secondary);
+  font-size: 0.5625rem;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+}
+
+.cg-poster-card__title {
+  color: var(--cg-color-text);
+  font-family: var(--cg-font-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.cg-poster-card__title--large {
+  font-size: 1.5rem;
+}
+
+/* Balão de comentário / avaliação */
+.cg-review-card {
+  backdrop-filter: blur(14px);
+  background: rgb(27 27 27 / 95%);
+  border: 1px solid var(--cg-color-border-strong);
+  border-radius: var(--cg-radius-xl);
+  box-shadow: var(--cg-shadow-card);
+}
+
+.cg-review-card__author {
+  color: var(--cg-color-text);
+  font-weight: 650;
+}
+
+.cg-review-card__comment {
+  color: var(--cg-color-text-secondary);
+  font-size: 0.75rem;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.cg-rating {
+  background: var(--cg-color-primary);
+  border-radius: var(--cg-radius-sm);
+  color: var(--cg-color-on-primary);
+  font-size: 0.625rem;
+  font-weight: 800;
+  padding: 0.2rem 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .cg-poster-card--left {
+    left: 0.25rem;
+  }
+
+  .cg-poster-card--right {
+    right: 0.25rem;
+  }
+
+  .cg-review-card {
+    left: 0.75rem;
+    right: 0.75rem;
+  }
+}
