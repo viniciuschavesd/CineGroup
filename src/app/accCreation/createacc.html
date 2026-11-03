@@ -5,10 +5,13 @@
       cinegroup<span class="cg-brand__dot">.</span>
     </a>
 
-    <a routerLink="/inicio" class="cg-link cg-register-back">
+    <div flex items-center gap-4>
+    <button routerLink="/inicio" class="cg-btn cg-btn--primary cg-btn--sm">
       <svg lucideArrowLeft class="cg-register-back__icon" aria-hidden="true"></svg>
       Voltar ao início
-    </a>
+    </button>
+    <button type="button" class="cg-btn cg-btn--primary cg-btn--ghost cg-btn--sm" routerLink="/login">Entrar</button>
+  </div>
   </header>
 
   <!-- Conteúdo principal -->

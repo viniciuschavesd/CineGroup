@@ -1,0 +1,131 @@
+<div class="cg-page cg-register-page min-h-screen flex flex-col">
+    <!-- Cabeçalho -->
+    <header class="cg-register-header">
+      <a routerLink="/inicio" class="cg-brand" aria-label="CineGroup - início">
+        cinegroup<span class="cg-brand__dot">.</span>
+      </a>
+  
+      <a routerLink="/inicio" class="cg-link cg-register-back">
+        <svg lucideArrowLeft class="cg-register-back__icon" aria-hidden="true"></svg>
+        Voltar ao início
+      </a>
+    </header>
+  
+    <!-- Conteúdo principal -->
+    <main class="cg-register-main">
+      <!-- Apresentação do CineGroup -->
+      <section class="cg-register-promo" aria-labelledby="register-promo-title">
+        <div class="cg-register-promo__copy">
+          <span class="cg-eyebrow">Para quem gosta de ver e conversar</span>
+  
+          <h1 id="register-promo-title" class="cg-heading cg-register-promo__title">
+            Seu próximo filme<br />
+            pode vir de um amigo.
+          </h1>
+  
+          <p class="cg-copy cg-copy--small cg-register-promo__description">
+            Guarde suas descobertas, reúna sua turma e compartilhe o que ficou depois dos créditos.
+          </p>
+        </div>
+  
+        <!-- Pôsteres extraídos da referência visual do PDF -->
+        <div class="cg-register-posters" aria-label="Filmes em destaque">
+          <article class="cg-register-poster cg-register-poster--aftersun cg-poster-card">
+            <img
+              src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600"
+              alt="Cena de Aftersun: duas pessoas no mar diante de uma paisagem costeira"
+            />
+            <div class="cg-register-poster__caption">
+              <span>Um filme de Charlotte Wells</span>
+              <h2>Aftersun</h2>
+            </div>
+          </article>
+  
+          <article class="cg-register-poster cg-register-poster--dias">
+            <img
+              src="https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=600"
+              alt="Cena de Dias Perfeitos: homem caminhando sob uma árvore em um parque"
+            />
+            <div class="cg-register-poster__caption">
+              <span>Um filme de Wim Wenders</span>
+              <h2>Dias Perfeitos</h2>
+            </div>
+          </article>
+  
+          <article class="cg-register-poster cg-register-poster--vidas">
+            <img
+              src="/images/filmes/vidas-passadas.jpg"
+              alt="Cena de Vidas Passadas: duas pessoas observando o horizonte de uma cidade"
+            />
+            <div class="cg-register-poster__caption">
+              <span>Um filme de Celine Song</span>
+              <h2>Vidas Passadas</h2>
+            </div>
+          </article>
+        </div>
+  
+        <div class="cg-register-promo__tagline">
+          <span aria-hidden="true"></span>
+          Menos rolagem infinita. Mais boas conversas.
+        </div>
+      </section>
+  
+      <!-- Formulário visual de login -->
+      <section class="cg-register-form-panel" aria-labelledby="register-title">
+        <div class="cg-register-form__intro">
+          <span class="cg-eyebrow">Apenas mais um passo.</span>
+          <h2 id="register-title" class="cg-heading cg-register-form__title">Faça seu login!</h2>
+          <p class="cg-copy cg-copy--small">
+            Basta informar seu e-mail e senha para acessar sua conta.
+          </p>
+        </div>
+  
+        <form class="cg-register-form" (submit)="$event.preventDefault()">  
+          <div class="cg-form-field">
+            <label for="register-email" class="cg-form-label">E-mail</label>
+            <input
+              id="register-email"
+              name="email"
+              type="email"
+              class="cg-form-input"
+              placeholder="pedro@email.com"
+              autocomplete="email"
+            />
+          </div>
+  
+          <div class="cg-form-field">
+            <label for="register-password" class="cg-form-label">Senha</label>
+            <div class="cg-form-input-wrap">
+              <input
+                id="register-password"
+                name="password"
+                type="password"
+                class="cg-form-input"
+                placeholder="Digite sua senha"
+                autocomplete="current-password"
+              />
+              <svg lucideEyeOff class="cg-form-input-icon" aria-hidden="true"></svg>
+            </div>
+            <span class="cg-form-hint">Esqueceu sua senha?</span>
+          </div>
+  
+          <button type="button" class="cg-btn cg-btn--primary cg-btn--lg cg-register-submit">
+            <svg lucideArrowRight class="cg-register-submit__icon" aria-hidden="true"></svg>
+            Entrar
+          </button>
+  
+        </form>
+      </section>
+    </main>
+  
+    <!-- Rodapé -->
+    <footer class="cg-register-footer">
+      <span>Um lugar para o cinema que fica com você.</span>
+      <nav aria-label="Links institucionais">
+        <a href="#privacidade" class="cg-link">Privacidade</a>
+        <span aria-hidden="true">·</span>
+        <a href="#termos" class="cg-link">Termos de uso</a>
+      </nav>
+    </footer>
+  </div>
+  
