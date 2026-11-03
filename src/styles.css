@@ -373,7 +373,10 @@
     height: 1rem;
     transition: transform 200ms ease;
   }
-
+  .cg-icon-star {
+    width: 1rem;
+    height: 1rem;
+  }
   .group:hover .cg-icon-arrow {
     transform: translate(0.125rem, -0.125rem);
   }

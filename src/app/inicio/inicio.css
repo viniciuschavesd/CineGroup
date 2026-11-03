@@ -42,13 +42,11 @@
 .cg-poster-card--right {
   transform: rotate(3deg);
 }
-
 .cg-poster-card:hover {
   border-color: rgb(163 230 53 / 45%);
   transform: rotate(0) translateY(-3px);
   z-index: 20;
 }
-
 .cg-poster-card__image {
   filter: brightness(0.75);
 }
@@ -131,7 +129,7 @@
 @layer components {
   /* Ícone de seta com animação */
   .cg-icon-star {
-    width: 0.6rem;
+    width: 0.7rem;
     height: 0.6rem;
     stroke-width: 3;
     fill: var(--cg-color-on-primary);
