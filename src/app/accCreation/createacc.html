@@ -114,7 +114,7 @@
             <input
               id="register-password"
               name="password"
-              [(ngModel)]= "user.password",
+              [(ngModel)]= "user.password"
               type="password"
               class="cg-form-input"
               placeholder="Crie uma senha"
@@ -125,7 +125,7 @@
           <span class="cg-form-hint">Use pelo menos 8 caracteres.</span>
         </div>
 
-        <button type="button" class="cg-btn cg-btn--primary cg-btn--lg cg-register-submit">
+        <button type="button" class="cg-btn cg-btn--primary cg-btn--lg cg-register-submit" (click)="createAccount()">
           <svg lucideArrowRight class="cg-register-submit__icon" aria-hidden="true"></svg>
           Criar minha conta
         </button>

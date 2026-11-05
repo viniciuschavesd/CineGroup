@@ -17,5 +17,14 @@ export class CreateAcc {
     email: "",
     password: "",
   }
+
+  createAccount() {
+    if (!this.user.name || !this.user.email || !this.user.password) {
+      alert("Erro ao criar conta");
+    }else{
+    localStorage.setItem('cineuser', JSON.stringify(this.user));
+    alert("Conta criada com sucesso");
+    }
+  }
 }
 

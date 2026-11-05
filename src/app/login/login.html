@@ -86,6 +86,7 @@
             <input
               id="register-email"
               name="email"
+              [(ngModel)]="email"
               type="email"
               class="cg-form-input"
               placeholder="pedro@email.com"
@@ -99,6 +100,7 @@
               <input
                 id="register-password"
                 name="password"
+                [(ngModel)]="password"
                 type="password"
                 class="cg-form-input"
                 placeholder="Digite sua senha"
@@ -109,11 +111,11 @@
             <span class="cg-form-hint">Esqueceu sua senha?</span>
           </div>
   
-          <button type="button" class="cg-btn cg-btn--primary cg-btn--lg cg-register-submit" (click)="checkLogin(email, password)">
+          <button type="button" class="cg-btn cg-btn--primary cg-btn--lg cg-register-submit" (click)="checkLogin()">
             <svg lucideArrowRight class="cg-register-submit__icon" aria-hidden="true"></svg>
             Entrar
           </button>
-  
+          
         </form>
       </section>
     </main>
