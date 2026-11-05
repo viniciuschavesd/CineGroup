@@ -18,7 +18,7 @@ export class Login {
     const user = JSON.parse(localStorage.getItem('cineuser') || '{}');
     
     if (this.email === user.email && this.password === user.password) {
-      alert("Login realizado com sucesso!");
+      alert("Login realizado com sucesso!\nBem-vindo(a) " + user.name);
     } else {
       alert("Erro, conta não reconhecida");
     }
