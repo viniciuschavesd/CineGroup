@@ -34,10 +34,8 @@
       <!-- Pôsteres extraídos da referência visual do PDF -->
       <div class="cg-register-posters" aria-label="Filmes em destaque">
         <article class="cg-register-poster cg-register-poster--aftersun cg-poster-card">
-          <img
-            src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600"
-            alt="Cena de Aftersun: duas pessoas no mar diante de uma paisagem costeira"
-          />
+          <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=600"
+            alt="Cena de Aftersun: duas pessoas no mar diante de uma paisagem costeira" />
           <div class="cg-register-poster__caption">
             <span>Um filme de Charlotte Wells</span>
             <h2>Aftersun</h2>
@@ -45,10 +43,8 @@
         </article>
 
         <article class="cg-register-poster cg-register-poster--dias">
-          <img
-            src="https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=600"
-            alt="Cena de Dias Perfeitos: homem caminhando sob uma árvore em um parque"
-          />
+          <img src="https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=600"
+            alt="Cena de Dias Perfeitos: homem caminhando sob uma árvore em um parque" />
           <div class="cg-register-poster__caption">
             <span>Um filme de Wim Wenders</span>
             <h2>Dias Perfeitos</h2>
@@ -56,10 +52,8 @@
         </article>
 
         <article class="cg-register-poster cg-register-poster--vidas">
-          <img
-            src="/images/filmes/vidas-passadas.jpg"
-            alt="Cena de Vidas Passadas: duas pessoas observando o horizonte de uma cidade"
-          />
+          <img src="/images/filmes/vidas-passadas.jpg"
+            alt="Cena de Vidas Passadas: duas pessoas observando o horizonte de uma cidade" />
           <div class="cg-register-poster__caption">
             <span>Um filme de Celine Song</span>
             <h2>Vidas Passadas</h2>
@@ -83,51 +77,38 @@
         </p>
       </div>
 
-      <form class="cg-register-form" (submit)="$event.preventDefault()">
+
+      <form class="cg-register-form" (ngSubmit)="createAccount()" #registerForm="ngForm">
         <div class="cg-form-field">
           <label for="register-name" class="cg-form-label">Seu nome</label>
-          <input
-            id="register-name"
-            name="name"
-            [(ngModel)]= "user.name"
-            class="cg-form-input"
-            placeholder="Pedro Elias"
-            autocomplete="name"
-          />
+
+          <input id="register-name" name="name" [(ngModel)]="user.name" type="text" class="cg-form-input" placeholder="Pedro Elias" autocomplete="name" required />
         </div>
 
         <div class="cg-form-field">
           <label for="register-email" class="cg-form-label">E-mail</label>
-          <input
-            id="register-email"
-            name="email"
-            [(ngModel)]= "user.email"
-            type="email"
-            class="cg-form-input"
-            placeholder="pedro@email.com"
-            autocomplete="email"
-          />
+
+          <input id="register-email" name="email" [(ngModel)]="user.email" type="email" class="cg-form-input"
+            placeholder="pedro@email.com" autocomplete="email" required />
         </div>
 
         <div class="cg-form-field">
           <label for="register-password" class="cg-form-label">Senha</label>
+
           <div class="cg-form-input-wrap">
-            <input
-              id="register-password"
-              name="password"
-              [(ngModel)]= "user.password"
-              type="password"
-              class="cg-form-input"
-              placeholder="Crie uma senha"
-              autocomplete="new-password"
-            />
+            <input id="register-password" name="password" [(ngModel)]="user.password" type="password" class="cg-form-input" placeholder="Crie uma senha" autocomplete="new-password" minlength="8" required />
             <svg lucideEyeOff class="cg-form-input-icon" aria-hidden="true"></svg>
           </div>
-          <span class="cg-form-hint">Use pelo menos 8 caracteres.</span>
+
+          <span class="cg-form-hint">
+            Use pelo menos 16 caracteres.
+          </span>
         </div>
 
-        <button type="button" class="cg-btn cg-btn--primary cg-btn--lg cg-register-submit" (click)="createAccount()">
+        <button type="submit" class="cg-btn cg-btn--primary cg-btn--lg cg-register-submit"
+          [disabled]="registerForm.invalid || isSubmitting">
           <svg lucideArrowRight class="cg-register-submit__icon" aria-hidden="true"></svg>
+
           Criar minha conta
         </button>
 
@@ -136,12 +117,8 @@
           <a href="#termos">Termos de uso</a> e a
           <a href="#privacidade">Política de privacidade</a> do CineGroup.
         </p>
-
-        <p class="cg-register-login">
-          Já faz parte da turma?
-          <a href="#entrar" class="cg-link">Entrar</a>
-        </p>
       </form>
+
     </section>
   </main>
 

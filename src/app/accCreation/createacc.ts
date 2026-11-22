@@ -1,28 +1,86 @@
-import { Component } from '@angular/core';
+
+import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+
 import { CINEGROUP_ICONS } from '../icons/icons';
-import { FormsModule} from '@angular/forms';
+import { UserService } from '../services/user';
+import type { RegisterUserInput } from '../models';
 
 @Component({
   selector: 'app-createacc',
   standalone: true,
-  imports: [RouterModule, ...CINEGROUP_ICONS, FormsModule],
+  imports: [
+    RouterModule,
+    ...CINEGROUP_ICONS,
+    FormsModule
+  ],
   templateUrl: './createacc.html',
   styleUrl: './createacc.css'
 })
-
 export class CreateAcc {
-  user = {
-    name: "",
-    email: "",
-    password: "",
-  }
 
-  createAccount() {
-  
-    localStorage.setItem('cineuser', JSON.stringify(this.user));
-    alert("Conta criada com sucesso");
-    console.log(this.user);
+  private userService = inject(UserService);
+
+  user: RegisterUserInput = {
+    name: '',
+    email: '',
+    password: ''
+  };
+
+  isSubmitting = false;
+
+  createAccount(): void {
+
+    if (this.isSubmitting) {
+      return;
+    }
+
+    const userData: RegisterUserInput = {
+      name: this.user.name.trim(),
+      email: this.user.email.trim().toLowerCase(),
+      password: this.user.password
+    };
+
+    if (!userData.name || !userData.email || !userData.password) {
+      alert('Preencha todos os campos.');
+      return;
+    }
+
+    if (userData.password.length < 16) {
+      alert('A senha precisa ter pelo menos 16 caracteres.');
+      return;
+    }
+
+    this.isSubmitting = true;
+
+    this.userService.register(userData).subscribe({
+
+      next: (createdUser) => {
+        this.isSubmitting = false;
+
+        alert(`Conta criada com sucesso! Bem-vindo(a), ${createdUser.name}.`);
+
+        console.log('Usuário cadastrado:', createdUser);
+
+        // Limpa o formulário após o cadastro
+        this.user = {
+          name: '',
+          email: '',
+          password: ''
+        };
+      },
+
+      error: (error: unknown) => {
+        this.isSubmitting = false;
+
+        const message = error instanceof Error
+          ? error.message
+          : 'Não foi possível criar sua conta. Tente novamente.';
+
+        alert(message);
+      }
+
+    });
   }
 }
-
