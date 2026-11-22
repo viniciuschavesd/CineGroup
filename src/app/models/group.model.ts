@@ -10,5 +10,5 @@ export interface Group {
   createdByUserId: string;
   memberUserIds: string[];
   createdAt: string;
-  posts: MoviePost[];
+
 }

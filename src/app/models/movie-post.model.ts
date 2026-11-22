@@ -4,12 +4,14 @@
  */
 export interface MoviePost {
   id: string;
+  groupId: string;
   movieId: string;
   authorUserId: string;
   postedAt: string;
   comment: string;
   rating?: number; // 0 to 10
-  groupId: string;
+
+  
   /** User IDs that liked this post. The like count is likedByUserIds.length. */
   likedByUserIds: string[];
 

@@ -1,5 +1,14 @@
 {
-  "users": [],
+  "users": [
+    {
+      "id": "6b2723e3-7384-43da-bfb3-286c613ef229",
+      "name": "Usuario Teste",
+      "createdAt": "2026-11-22T19:43:39.8807007Z",
+      "password": "123456",
+      "email": "teste@cinegroup.com",
+      "movieList": []
+    }
+  ],
   "movies": [],
   "groups": [],
   "moviePosts": []
