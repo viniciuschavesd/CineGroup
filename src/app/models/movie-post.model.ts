@@ -9,7 +9,7 @@ export interface MoviePost {
   postedAt: string;
   comment: string;
   rating?: number; // 0 to 10
-
+  groupId: string;
   /** User IDs that liked this post. The like count is likedByUserIds.length. */
   likedByUserIds: string[];
 
