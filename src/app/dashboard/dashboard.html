@@ -1,0 +1,373 @@
+
+<div class="cg-page cg-dashboard">
+
+  @if (loading) {
+    <main class="cg-dashboard-state">
+      <div class="cg-dashboard-loader"></div>
+      <p>Preparando sua próxima sessão...</p>
+    </main>
+  }
+
+  @else if (errorMessage) {
+    <main class="cg-dashboard-state">
+      <h2 class="cg-heading">Ops! Algo deu errado.</h2>
+      <p class="cg-copy">{{ errorMessage }}</p>
+
+      <button
+        type="button"
+        class="cg-btn cg-btn--primary"
+        (click)="loadDashboard()"
+      >
+        Tentar novamente
+      </button>
+    </main>
+  }
+
+  @else if (currentUser) {
+
+    <!-- Cabeçalho -->
+    <header class="cg-dashboard-header">
+
+      <a
+        routerLink="/dashboard"
+        class="cg-brand"
+        aria-label="CineGroup"
+      >
+        cinegroup<span class="cg-brand__dot">.</span>
+      </a>
+
+      <nav class="cg-dashboard-nav">
+        <a href="#my-list" class="cg-dashboard-nav__link is-active">
+          <svg lucideBookmark aria-hidden="true"></svg>
+          Minha lista
+        </a>
+
+        <a href="#my-groups" class="cg-dashboard-nav__link">
+          <svg lucideUsersRound aria-hidden="true"></svg>
+          Meus grupos
+        </a>
+      </nav>
+
+      <div class="cg-dashboard-profile">
+        <div class="cg-dashboard-avatar">
+          {{ userInitials }}
+        </div>
+
+        <div class="cg-dashboard-profile__info">
+          <span>{{ currentUser.name }}</span>
+          <small>@{{ currentUser.user }}</small>
+        </div>
+      </div>
+
+    </header>
+
+    <!-- Conteúdo -->
+    <main class="cg-dashboard-container">
+
+      <!-- Introdução -->
+      <section class="cg-dashboard-intro">
+        <div>
+          <span class="cg-eyebrow">
+            Boa sessão, {{ currentUser.name }}.
+          </span>
+
+          <h1 class="cg-heading cg-dashboard-title">
+            Minha lista
+          </h1>
+
+          <p class="cg-copy">
+            Os filmes que você quer ver. E os que já fazem parte da sua história.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="cg-btn cg-btn--primary cg-dashboard-add"
+          disabled
+          title="A tela de adicionar filmes será criada na próxima etapa"
+        >
+          <span>+</span>
+          Adicionar filme
+        </button>
+      </section>
+
+      <!-- Colunas principais -->
+      <div class="cg-dashboard-layout">
+
+        <!-- Lista de filmes -->
+        <section id="my-list" class="cg-dashboard-movies">
+
+          <div class="cg-dashboard-list-toolbar">
+
+            <div class="cg-dashboard-filters">
+
+              <button
+                type="button"
+                [class.is-active]="activeFilter === 'all'"
+                (click)="setFilter('all')"
+              >
+                Todos · {{ totalMovies }}
+              </button>
+
+              <button
+                type="button"
+                [class.is-active]="activeFilter === 'want-to-watch'"
+                (click)="setFilter('want-to-watch')"
+              >
+                Não vistos · {{ unwatchedMovies }}
+              </button>
+
+              <button
+                type="button"
+                [class.is-active]="activeFilter === 'watched'"
+                (click)="setFilter('watched')"
+              >
+                Vistos · {{ watchedMovies }}
+              </button>
+
+            </div>
+
+            <span class="cg-dashboard-sort">
+              Ordem manual
+            </span>
+
+          </div>
+
+          <!-- Filmes cadastrados -->
+          @if (filteredMovies.length > 0) {
+
+            <div class="cg-dashboard-movie-list">
+
+              @for (movie of filteredMovies; track movie.id; let i = $index) {
+
+                <article class="cg-dashboard-movie">
+
+                  <span class="cg-dashboard-movie__number">
+                    {{ getMovieNumber(i) }}
+                  </span>
+
+                  <div class="cg-dashboard-movie__poster">
+
+                    @if (movie.posterUrl) {
+                      <img
+                        [src]="movie.posterUrl"
+                        [alt]="'Pôster de ' + movie.title"
+                      />
+                    }
+
+                    @else {
+                      <span>{{ movie.title }}</span>
+                    }
+
+                  </div>
+
+                  <div class="cg-dashboard-movie__info">
+                    <h2>{{ movie.title }}</h2>
+
+                    <p>
+                      {{ movie.releaseYear }} · {{ movie.director }}
+                    </p>
+
+                    <small>
+                      {{ movie.genres?.join(' · ') }}
+                    </small>
+                  </div>
+
+                  <button
+                    type="button"
+                    class="cg-dashboard-status"
+                    [class.is-watched]="movie.status === 'watched'"
+                    [disabled]="updatingMovieId === movie.id"
+                    (click)="toggleMovieStatus(movie)"
+                    [title]="'Alterar status de ' + movie.title"
+                  >
+                    @if (movie.status === 'watched') {
+                      <svg lucideCheck aria-hidden="true"></svg>
+                      Visto
+                    }
+
+                    @else {
+                      <span class="cg-dashboard-status__circle"></span>
+                      Não visto
+                    }
+
+                    <span class="cg-dashboard-status__arrow">⌄</span>
+                  </button>
+
+                </article>
+
+              }
+
+            </div>
+
+            <p class="cg-dashboard-list-hint">
+              Clique no status de um filme para alternar entre visto e não visto.
+            </p>
+
+          }
+
+          <!-- Estado vazio -->
+          @else {
+
+            <div class="cg-dashboard-empty">
+
+              <div class="cg-dashboard-empty__icon">
+                <svg lucideBookmark aria-hidden="true"></svg>
+              </div>
+
+              @if (totalMovies === 0) {
+                <h2 class="cg-heading">
+                  Sua lista começa aqui.
+                </h2>
+
+                <p class="cg-copy">
+                  Guarde os filmes que chamaram sua atenção e organize sua próxima sessão.
+                </p>
+              }
+
+              @else {
+                <h2 class="cg-heading">
+                  Nenhum filme por aqui.
+                </h2>
+
+                <p class="cg-copy">
+                  Não existem filmes nesta categoria ainda.
+                </p>
+              }
+
+              <button
+                type="button"
+                class="cg-btn cg-btn--outline"
+                disabled
+              >
+                + Adicionar primeiro filme
+              </button>
+
+            </div>
+
+          }
+
+        </section>
+
+        <!-- Lateral -->
+        <aside class="cg-dashboard-sidebar">
+
+          <!-- Meus grupos -->
+          <section id="my-groups" class="cg-dashboard-groups">
+
+            <div class="cg-dashboard-sidebar-heading">
+              <h2 class="cg-heading">Meus grupos</h2>
+              <span>{{ groups.length }}</span>
+            </div>
+
+            @if (groups.length > 0) {
+
+              <div class="cg-dashboard-group-list">
+
+                @for (group of groups; track group.id) {
+
+                  <article class="cg-dashboard-group">
+
+                    <div class="cg-dashboard-group__identity">
+
+                      <div class="cg-dashboard-group__avatar">
+                        {{ group.name.charAt(0).toUpperCase() }}
+                      </div>
+
+                      <div>
+                        <h3>{{ group.name }}</h3>
+
+                        <p>
+                          {{ group.memberCount }}
+                          {{ group.memberCount === 1 ? 'membro' : 'membros' }}
+                          ·
+                          {{ group.movieCount }}
+                          {{ group.movieCount === 1 ? 'filme' : 'filmes' }}
+                        </p>
+                      </div>
+
+                    </div>
+
+                    @if (group.previewPosters.length > 0) {
+                      <div class="cg-dashboard-group__posters">
+
+                        @for (poster of group.previewPosters; track poster) {
+                          <img [src]="poster" alt="Pôster de filme compartilhado" />
+                        }
+
+                      </div>
+                    }
+
+                    @if (group.description) {
+                      <p class="cg-dashboard-group__description">
+                        {{ group.description }}
+                      </p>
+                    }
+
+                  </article>
+
+                }
+
+              </div>
+
+            }
+
+            @else {
+
+              <div class="cg-dashboard-group-empty">
+                <p>Você ainda não participa de nenhum grupo.</p>
+                <span>Reúna sua turma e compartilhe suas descobertas.</span>
+              </div>
+
+            }
+
+            <button
+              type="button"
+              class="cg-dashboard-create-group"
+              disabled
+            >
+              + Criar novo grupo
+            </button>
+
+            <a href="#my-groups" class="cg-dashboard-all-groups">
+              Ver todos os meus grupos →
+            </a>
+
+          </section>
+
+          <!-- Card de incentivo -->
+          <section class="cg-dashboard-invite">
+
+            <svg lucideMessageCircle aria-hidden="true"></svg>
+
+            <h2 class="cg-heading">
+              Viu um filme?
+              Leve para a roda.
+            </h2>
+
+            <p>
+              Seu ponto de vista pode ser a próxima descoberta de alguém.
+              Compartilhe uma nota e um comentário nos seus grupos.
+            </p>
+
+            <a href="#my-groups">
+              Ir para meus grupos →
+            </a>
+
+          </section>
+
+        </aside>
+
+      </div>
+
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="cg-dashboard-footer">
+      <span>CineGroup — o filme termina, a conversa continua.</span>
+      <span>Precisa de ajuda?</span>
+    </footer>
+
+  }
+
+</div>
