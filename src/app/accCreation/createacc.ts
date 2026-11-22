@@ -24,6 +24,7 @@ export class CreateAcc {
 
   user: RegisterUserInput = {
     name: '',
+    user: '',
     email: '',
     password: ''
   };
@@ -38,17 +39,18 @@ export class CreateAcc {
 
     const userData: RegisterUserInput = {
       name: this.user.name.trim(),
+      user: this.user.user.trim(),
       email: this.user.email.trim().toLowerCase(),
       password: this.user.password
     };
 
-    if (!userData.name || !userData.email || !userData.password) {
+    if (!userData.name || !userData.user || !userData.email || !userData.password) {
       alert('Preencha todos os campos.');
       return;
     }
 
-    if (userData.password.length < 16) {
-      alert('A senha precisa ter pelo menos 16 caracteres.');
+    if (userData.password.length < 8) {
+      alert('A senha precisa ter pelo menos 8 caracteres.');
       return;
     }
 
@@ -66,6 +68,7 @@ export class CreateAcc {
         // Limpa o formulário após o cadastro
         this.user = {
           name: '',
+          user: '',
           email: '',
           password: ''
         };

@@ -82,15 +82,15 @@
   
         <form class="cg-register-form" (submit)="$event.preventDefault()">  
           <div class="cg-form-field">
-            <label for="register-email" class="cg-form-label">E-mail</label>
+            <label for="register-user" class="cg-form-label">Nome de usuário</label>
             <input
-              id="register-email"
-              name="email"
-              [(ngModel)]="email"
-              type="email"
+              id="register-user"
+              name="user"
+              [(ngModel)]="user"
+              type="text"
               class="cg-form-input"
-              placeholder="pedro@email.com"
-              autocomplete="email"
+              placeholder="pedro_elias"
+              autocomplete="username"
             />
           </div>
   

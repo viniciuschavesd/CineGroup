@@ -7,6 +7,23 @@
       "password": "123456",
       "email": "teste@cinegroup.com",
       "movieList": []
+    },
+    {
+      "id": "e55dd1f6-615c-4804-9f1e-ddc53655927b",
+      "name": "Pedro",
+      "email": "pedro@email.com",
+      "password": "12345678",
+      "createdAt": "2026-11-22T20:32:58.362Z",
+      "movieList": []
+    },
+    {
+      "id": "d0ff4473-2ca5-4c9f-884f-4ab24ff2640b",
+      "name": "pedro",
+      "user": "pedrin",
+      "email": "pedrin@adc.com",
+      "password": "123456789",
+      "createdAt": "2026-11-22T20:47:19.284Z",
+      "movieList": []
     }
   ],
   "movies": [],

@@ -22,6 +22,7 @@ export interface UserMovieEntry {
 export interface User {
   id: string;
   name: string;
+  user: string;
   email: string;
   createdAt: string;
   avatarUrl?: string;
@@ -34,6 +35,7 @@ export interface User {
  */
 export interface RegisterUserInput {
   name: string;
+  user: string;
   email: string;
   password: string;
 }
@@ -42,6 +44,6 @@ export interface RegisterUserInput {
  * Data entered in the login form.
  */
 export interface LoginCredentials {
-  email: string;
+  user: string;
   password: string;
 }

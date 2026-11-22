@@ -51,6 +51,7 @@ export class UserService {
           const newUser: UserRecord = {
             id: crypto.randomUUID(),
             name: input.name,
+            user: input.user,
             email: input.email,
             password: input.password,
             createdAt: new Date().toISOString(),
@@ -71,7 +72,7 @@ export class UserService {
 
     return this.http
       .get<UserRecord[]>(
-        `${this.apiUrl}?email=${encodeURIComponent(credentials.email)}`
+        `${this.apiUrl}?user=${encodeURIComponent(credentials.user)}`
       )
       .pipe(
         map(users => {
@@ -81,7 +82,7 @@ export class UserService {
           );
 
           if (!user) {
-            throw new Error('E-mail ou senha incorretos.');
+            throw new Error('Nome de usuário ou senha incorretos.');
           }
 
           const { password, ...publicUser } = user;
