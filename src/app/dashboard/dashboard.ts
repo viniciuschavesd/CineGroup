@@ -1,10 +1,13 @@
 
+import { CommonModule } from '@angular/common';
+
 import {
     Component,
     OnInit,
     ChangeDetectorRef,
     inject
 } from '@angular/core';
+
 import { Router, RouterModule } from '@angular/router';
 
 import {
@@ -30,6 +33,7 @@ import { TmdbService } from '../services/tmdb';
 
 import type {
     User,
+    UserMovieEntry,
     Movie,
     Group,
     MovieListStatus
@@ -58,6 +62,7 @@ interface DashboardGroup extends Group {
     selector: 'app-dashboard',
     standalone: true,
     imports: [
+        CommonModule,
         RouterModule,
         ...CINEGROUP_ICONS
     ],
@@ -535,13 +540,14 @@ export class Dashboard implements OnInit {
                     });
                 }
 
-                const newEntry = {
+                // Nova entrada tipada corretamente
+                const newEntry: UserMovieEntry = {
                     movieId: movie.id,
-                    status: 'want-to-watch' as MovieListStatus,
+                    status: 'want-to-watch',
                     addedAt: new Date().toISOString()
                 };
 
-                const updatedList = [
+                const updatedList: UserMovieEntry[] = [
                     ...currentList,
                     newEntry
                 ];

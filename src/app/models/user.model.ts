@@ -12,7 +12,7 @@ export interface UserMovieEntry {
   status: MovieListStatus;
   addedAt: string;
   watchedAt?: string;
-  personalRating?: number; // 0 to 10
+  personalRating?: number;
 }
 
 /**
@@ -47,3 +47,4 @@ export interface LoginCredentials {
   user: string;
   password: string;
 }
+
