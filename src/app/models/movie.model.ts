@@ -1,8 +1,7 @@
-/**
- * Movie catalog entry shared by personal lists and group posts.
- */
 export interface Movie {
   id: string;
+  tmdbId?: number;
+
   title: string;
   director: string;
   releaseYear: number;

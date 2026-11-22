@@ -1,3 +1,4 @@
+
 import {
     Component,
     OnInit,
@@ -5,6 +6,7 @@ import {
     inject
 } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
+
 import {
     catchError,
     defaultIfEmpty,
@@ -14,7 +16,7 @@ import {
     of,
     switchMap,
     take,
-    throwIfEmpty,
+    throwError,
     timeout
 } from 'rxjs';
 
@@ -25,12 +27,18 @@ import { MovieService } from '../services/movie';
 import { GroupService } from '../services/group';
 import { MoviePostService } from '../services/moviepost';
 import { TmdbService } from '../services/tmdb';
+
 import type {
     User,
     Movie,
     Group,
     MovieListStatus
 } from '../models';
+
+import type {
+    TmdbMovie,
+    TmdbMovieDetails
+} from '../models/tmdb.model';
 
 type MovieFilter = 'all' | MovieListStatus;
 
@@ -77,8 +85,24 @@ export class Dashboard implements OnInit {
     errorMessage = '';
     updatingMovieId: string | null = null;
 
+    // Pesquisa de filmes
+    isMovieSearchOpen = false;
+
+    movieSearchQuery = '';
+    tmdbResults: TmdbMovie[] = [];
+
+    isSearchingMovies = false;
+    movieSearchPerformed = false;
+    movieSearchError = '';
+
+    // Filme selecionado
+    selectedTmdbMovie: TmdbMovie | null = null;
+    selectedMovieDetails: TmdbMovieDetails | null = null;
+
+    isLoadingMovieDetails = false;
+    isSavingMovie = false;
+
     ngOnInit(): void {
-        console.log('TESTE 1: Dashboard foi iniciado');
         this.loadDashboard();
     }
 
@@ -98,9 +122,7 @@ export class Dashboard implements OnInit {
         }
     }
 
-    // Carrega todas as informações necessárias
-
-
+    // Carrega as informações do dashboard
     loadDashboard(): void {
         const userId = this.getSessionUserId();
 
@@ -116,8 +138,6 @@ export class Dashboard implements OnInit {
         this.movies = [];
         this.groups = [];
 
-        // Primeiro, carrega somente o usuário.
-        // O perfil não depende da existência de filmes ou grupos.
         this.userService.getUserById(userId).pipe(
 
             take(1),
@@ -132,8 +152,6 @@ export class Dashboard implements OnInit {
 
                 this.currentUser = safeUser;
 
-                // As demais consultas são complementares.
-                // Se alguma falhar, utilizamos uma lista vazia.
                 return forkJoin({
 
                     catalog: this.movieService.getMovies().pipe(
@@ -175,23 +193,15 @@ export class Dashboard implements OnInit {
 
             }),
 
-            // Encerra o carregamento independentemente do resultado.
             finalize(() => {
                 this.loading = false;
-
-                // Força a atualização da interface
                 this.cdr.detectChanges();
-
-                console.log('[Dashboard] Carregamento finalizado.');
-                console.log('[Dashboard] Loading:', this.loading);
             })
 
         ).subscribe({
 
             next: data => {
                 try {
-
-                    console.log('[Dashboard] Dados recebidos:', data);
 
                     const userMovieList = data.user.movieList ?? [];
 
@@ -241,12 +251,6 @@ export class Dashboard implements OnInit {
                         };
                     });
 
-                    console.log('[Dashboard] Dashboard carregado:', {
-                        user: this.currentUser,
-                        movies: this.movies,
-                        groups: this.groups
-                    });
-
                 } catch (error) {
 
                     console.error('[Dashboard] Erro ao processar dados:', error);
@@ -267,8 +271,359 @@ export class Dashboard implements OnInit {
         });
     }
 
+    // =====================================================
+    // PESQUISA DE FILMES NA TMDB
+    // =====================================================
 
-    // Filtros da lista pessoal
+    openMovieSearch(): void {
+        this.movieSearchQuery = '';
+        this.tmdbResults = [];
+
+        this.movieSearchPerformed = false;
+        this.movieSearchError = '';
+
+        this.selectedTmdbMovie = null;
+        this.selectedMovieDetails = null;
+
+        this.isMovieSearchOpen = true;
+    }
+
+    closeMovieSearch(): void {
+        if (this.isSavingMovie) {
+            return;
+        }
+
+        this.isMovieSearchOpen = false;
+    }
+
+    onMovieSearchInput(event: Event): void {
+        const input = event.target as HTMLInputElement;
+
+        this.movieSearchQuery = input.value;
+
+        // Evita manter resultados de uma pesquisa anterior
+        this.tmdbResults = [];
+        this.movieSearchPerformed = false;
+
+        this.selectedTmdbMovie = null;
+        this.selectedMovieDetails = null;
+
+        this.movieSearchError = '';
+    }
+
+    searchTmdbMovies(): void {
+        const query = this.movieSearchQuery.trim();
+
+        if (query.length < 2) {
+            this.movieSearchError =
+                'Digite pelo menos dois caracteres para pesquisar.';
+
+            return;
+        }
+
+        if (this.isSearchingMovies) {
+            return;
+        }
+
+        this.isSearchingMovies = true;
+        this.movieSearchError = '';
+        this.movieSearchPerformed = false;
+
+        this.tmdbResults = [];
+        this.selectedTmdbMovie = null;
+        this.selectedMovieDetails = null;
+
+        this.tmdbService.searchMovies(query).pipe(
+
+            take(1),
+
+            finalize(() => {
+                this.isSearchingMovies = false;
+                this.cdr.detectChanges();
+            })
+
+        ).subscribe({
+
+            next: response => {
+                this.tmdbResults = response.results ?? [];
+                this.movieSearchPerformed = true;
+            },
+
+            error: error => {
+                console.error('[TMDB] Erro na pesquisa:', error);
+
+                this.movieSearchError =
+                    'Não foi possível pesquisar os filmes. Verifique sua conexão e tente novamente.';
+            }
+
+        });
+    }
+
+    // =====================================================
+    // SELEÇÃO E DETALHES DO FILME
+    // =====================================================
+
+    selectTmdbMovie(movie: TmdbMovie): void {
+        this.selectedTmdbMovie = movie;
+        this.selectedMovieDetails = null;
+
+        this.movieSearchError = '';
+        this.isLoadingMovieDetails = true;
+
+        this.tmdbService.getMovieDetails(movie.id).pipe(
+
+            take(1),
+
+            finalize(() => {
+                this.isLoadingMovieDetails = false;
+                this.cdr.detectChanges();
+            })
+
+        ).subscribe({
+
+            next: details => {
+                this.selectedMovieDetails = details;
+            },
+
+            error: error => {
+                console.error('[TMDB] Erro ao buscar detalhes:', error);
+
+                this.movieSearchError =
+                    'Não foi possível carregar os detalhes deste filme.';
+            }
+
+        });
+    }
+
+    // URL do pôster
+    getTmdbPosterUrl(path: string | null): string | null {
+        return this.tmdbService.getPosterUrl(path);
+    }
+
+    // Ano de lançamento
+    getReleaseYear(releaseDate: string | null | undefined): string {
+        if (!releaseDate) {
+            return 'Ano não informado';
+        }
+
+        return releaseDate.slice(0, 4);
+    }
+
+    // Diretor do filme selecionado
+    get selectedMovieDirector(): string {
+        const crew = this.selectedMovieDetails?.credits?.crew ?? [];
+
+        const director = crew.find(
+            member => member.job === 'Director'
+        );
+
+        return director?.name ?? 'Não informado';
+    }
+
+    // Gêneros do filme selecionado
+    get selectedMovieGenres(): string {
+        const genres = this.selectedMovieDetails?.genres ?? [];
+
+        return genres
+            .map(genre => genre.name)
+            .join(' · ');
+    }
+
+    // Verifica se o filme já está na lista do usuário
+    get isSelectedMovieAlreadyInList(): boolean {
+        const tmdbId = this.selectedMovieDetails?.id;
+
+        if (!tmdbId) {
+            return false;
+        }
+
+        return this.movies.some(
+            movie => movie.tmdbId === tmdbId
+        );
+    }
+
+    // =====================================================
+    // ADICIONAR FILME À LISTA PESSOAL
+    // =====================================================
+
+    addSelectedMovieToList(): void {
+        const details = this.selectedMovieDetails;
+        const user = this.currentUser;
+
+        if (!details || !user || this.isSavingMovie) {
+            return;
+        }
+
+        if (this.isSelectedMovieAlreadyInList) {
+            this.movieSearchError =
+                'Este filme já está na sua lista.';
+
+            return;
+        }
+
+        this.isSavingMovie = true;
+        this.movieSearchError = '';
+
+        // Primeiro verifica se o filme já existe no catálogo.
+        this.movieService.getMovies().pipe(
+
+            take(1),
+
+            switchMap(catalog => {
+
+                const existingMovie = catalog.find(
+                    movie => movie.tmdbId === details.id
+                );
+
+                // Reutiliza o cadastro existente, se houver.
+                if (existingMovie) {
+                    return of(existingMovie);
+                }
+
+                // Procura o diretor nos créditos da TMDB.
+                const director = details.credits?.crew?.find(
+                    member => member.job === 'Director'
+                )?.name ?? 'Não informado';
+
+                const posterUrl = this.tmdbService.getPosterUrl(
+                    details.poster_path
+                );
+
+                const newMovie: Omit<Movie, 'id'> = {
+                    tmdbId: details.id,
+                    title: details.title,
+                    director,
+                    releaseYear: details.release_date
+                        ? Number(details.release_date.slice(0, 4))
+                        : 0,
+                    posterUrl: posterUrl ?? undefined,
+                    genres: details.genres?.map(
+                        genre => genre.name
+                    ) ?? [],
+                    synopsis: details.overview || undefined
+                };
+
+                // Cria o filme no catálogo local.
+                return this.movieService.createMovie(newMovie).pipe(
+                    take(1)
+                );
+            }),
+
+            // Depois relaciona o filme ao usuário.
+            switchMap(movie => {
+
+                const currentUser = this.currentUser;
+
+                if (!currentUser) {
+                    return throwError(
+                        () => new Error('Sua sessão não está mais disponível.')
+                    );
+                }
+
+                const currentList = currentUser.movieList ?? [];
+
+                // Verifica novamente para evitar duplicidade.
+                const existingEntry = currentList.find(
+                    entry => entry.movieId === movie.id
+                );
+
+                if (existingEntry) {
+                    return of({
+                        movie,
+                        updatedList: currentList,
+                        entry: existingEntry
+                    });
+                }
+
+                const newEntry = {
+                    movieId: movie.id,
+                    status: 'want-to-watch' as MovieListStatus,
+                    addedAt: new Date().toISOString()
+                };
+
+                const updatedList = [
+                    ...currentList,
+                    newEntry
+                ];
+
+                return this.userService.updateUser(
+                    currentUser.id,
+                    { movieList: updatedList }
+                ).pipe(
+                    take(1),
+                    map(() => ({
+                        movie,
+                        updatedList,
+                        entry: newEntry
+                    }))
+                );
+
+            }),
+
+            finalize(() => {
+                this.isSavingMovie = false;
+                this.cdr.detectChanges();
+            })
+
+        ).subscribe({
+
+            next: ({ movie, updatedList, entry }) => {
+
+                if (!this.currentUser) {
+                    return;
+                }
+
+                // Atualiza o usuário em memória.
+                this.currentUser = {
+                    ...this.currentUser,
+                    movieList: updatedList
+                };
+
+                // Atualiza a sessão.
+                sessionStorage.setItem(
+                    'cinegroupUser',
+                    JSON.stringify(this.currentUser)
+                );
+
+                // Atualiza a lista exibida no dashboard.
+                const dashboardMovie: DashboardMovie = {
+                    ...movie,
+                    status: entry.status,
+                    addedAt: entry.addedAt,
+                    personalRating: entry.personalRating
+                };
+
+                const alreadyDisplayed = this.movies.some(
+                    item => item.id === movie.id
+                );
+
+                this.movies = alreadyDisplayed
+                    ? this.movies.map(item =>
+                        item.id === movie.id ? dashboardMovie : item
+                    )
+                    : [...this.movies, dashboardMovie];
+
+                // Mostra o filme recém-adicionado.
+                this.activeFilter = 'all';
+
+                // Fecha a janela de pesquisa.
+                this.isMovieSearchOpen = false;
+            },
+
+            error: error => {
+                console.error('[Dashboard] Erro ao adicionar filme:', error);
+
+                this.movieSearchError =
+                    'Não foi possível adicionar o filme. Verifique se o JSON Server está funcionando.';
+            }
+
+        });
+    }
+
+    // =====================================================
+    // FILTROS DA LISTA PESSOAL
+    // =====================================================
+
     setFilter(filter: MovieFilter): void {
         this.activeFilter = filter;
     }
@@ -350,7 +705,7 @@ export class Dashboard implements OnInit {
                 this.updatingMovieId = null;
             },
 
-            error: (error) => {
+            error: error => {
                 console.error('Erro ao atualizar filme:', error);
 
                 this.errorMessage =
@@ -362,7 +717,10 @@ export class Dashboard implements OnInit {
         });
     }
 
-    // Iniciais para o avatar do usuário
+    // =====================================================
+    // USUÁRIO
+    // =====================================================
+
     get userInitials(): string {
         if (!this.currentUser?.name) {
             return 'CG';
