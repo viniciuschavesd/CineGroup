@@ -29,7 +29,7 @@ export class GroupService {
       map(groups =>
         groups.filter(group =>
           group.createdByUserId === userId ||
-          group.memberUserIds.includes(userId)
+          (group.memberUserIds ?? []).includes(userId)
         )
       )
     );
