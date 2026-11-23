@@ -12,7 +12,14 @@ import {
   LucideEye,
   LucidePencil,
   LucideTrash,
-  LucideLogOut
+  LucideLogOut,
+  LucideSearch,
+  LucideFilm,
+  LucidePlus,
+  LucideCrown,
+  LucideUserX,
+  LucideSend,
+  LucideTicket
 } from '@lucide/angular';
 
 export const CINEGROUP_ICONS = [
@@ -29,5 +36,12 @@ export const CINEGROUP_ICONS = [
   LucideEye,
   LucidePencil,
   LucideTrash,
-  LucideLogOut
+  LucideLogOut,
+  LucideSearch,
+  LucideFilm,
+  LucidePlus,
+  LucideCrown,
+  LucideUserX,
+  LucideSend,
+  LucideTicket
 ];

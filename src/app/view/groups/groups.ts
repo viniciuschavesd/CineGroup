@@ -16,17 +16,19 @@ import {
     finalize,
     forkJoin,
     take,
-    timeout
+    timeout,
+    catchError
 } from 'rxjs';
 
 import { CINEGROUP_ICONS } from '../../icons/icons';
 
 import { UserService } from '../../services/user';
 import { GroupService } from '../../services/group';
-
+import { MoviePostService } from '../../services/moviepost';
 import type {
     User,
-    Group
+    Group,
+    MoviePost
 } from '../../models';
 
 @Component({
@@ -52,7 +54,7 @@ export class Groups implements OnInit {
     private router = inject(Router);
     private cdr = inject(ChangeDetectorRef);
     private ngZone = inject(NgZone);
-
+    private moviePostService = inject(MoviePostService);
 
     // =====================================================
     // DADOS DO USUÁRIO E DOS GRUPOS
@@ -62,7 +64,7 @@ export class Groups implements OnInit {
 
     // Signal responsável pela atualização automática dos grupos
     groups = signal<Group[]>([]);
-
+    lastPostDates = signal<Record<string, string>>({});
     loading = true;
     errorMessage = '';
 
@@ -135,6 +137,7 @@ export class Groups implements OnInit {
         this.loading = true;
         this.errorMessage = '';
 
+
         forkJoin({
 
             user: this.userService.getUserById(userId).pipe(
@@ -143,8 +146,11 @@ export class Groups implements OnInit {
 
             groups: this.groupService.getGroupsByUser(userId).pipe(
                 take(1)
-            )
 
+            ),
+            posts: this.moviePostService.getMoviePosts().pipe(
+                take(1)
+            )
         }).pipe(
 
             timeout({ first: 10000 }),
@@ -178,7 +184,28 @@ export class Groups implements OnInit {
                     this.cdr.detectChanges();
 
                 });
+                // Calcula a data da publicação mais recente de cada grupo
+                const latestPostDates: Record<string, string> = {};
 
+                data.posts.forEach(post => {
+
+                    if (!post.groupId || !post.postedAt) {
+                        return;
+                    }
+
+                    const currentDate = latestPostDates[post.groupId];
+
+                    if (
+                        !currentDate ||
+                        new Date(post.postedAt).getTime() > new Date(currentDate).getTime()
+                    ) {
+                        latestPostDates[post.groupId] = post.postedAt;
+                    }
+
+                });
+
+                // Atualiza o Signal
+                this.lastPostDates.set(latestPostDates);
             },
 
             error: error => {
@@ -196,6 +223,7 @@ export class Groups implements OnInit {
             }
 
         });
+
 
     }
 

@@ -166,7 +166,7 @@
     padding: 1.25rem;
 
     background: var(--cg-color-surface);
-    border: 1px solid var(--cg-color-border);
+    border: 1px solid var(--cg-color-primary);
     border-radius: var(--cg-radius-xl);
 
     box-shadow: var(--cg-shadow-card);
@@ -1095,4 +1095,86 @@
         width: 100%;
     }
 
+}
+/* =====================================================
+   CARD — ÍCONE E BOTÃO VER GRUPO
+===================================================== */
+
+.cg-group-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+
+    margin-bottom: 1.3rem;
+}
+
+.cg-group-card__identity {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    min-width: 0;
+}
+
+.cg-group-card__open {
+    min-height: 42px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+
+    padding: 0.7rem 1.1rem;
+
+    color: var(--cg-color-primary);
+    background: var(--cg-color-primary-soft);
+
+    border: 1px solid color-mix(
+        in srgb,
+        var(--cg-color-primary) 30%,
+        var(--cg-color-border)
+    );
+
+    border-radius: var(--cg-radius-md);
+
+    font-size: 0.8rem;
+    font-weight: 650;
+    text-decoration: none;
+    white-space: nowrap;
+
+    transition:
+        background var(--cg-transition-fast),
+        border-color var(--cg-transition-fast),
+        box-shadow var(--cg-transition-fast),
+        transform var(--cg-transition-fast);
+}
+
+.cg-group-card__open svg {
+    width: 1rem;
+    height: 1rem;
+    align-items: center;
+    transition: transform 180ms ease;
+}
+
+.cg-group-card__open:hover {
+    background: var(--cg-color-primary-soft);
+
+    border-color: var(--cg-color-primary);
+
+    box-shadow: 0 0 14px color-mix(
+        in srgb,
+        var(--cg-color-primary) 12%,
+        transparent
+    );
+
+    transform: translateY(-2px);
+}
+
+.cg-group-card__open:hover svg {
+    transform: translateX(3px);
+}
+
+.cg-group-card__open:focus-visible {
+    outline: 2px solid var(--cg-color-primary);
+    outline-offset: 3px;
 }

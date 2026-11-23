@@ -1,0 +1,802 @@
+<div class="cg-page cg-group-detail-page">
+
+    <!-- CARREGAMENTO -->
+    @if (loading) {
+
+    <main class="cg-dashboard-state">
+        <div class="cg-dashboard-loader"></div>
+        <p>Preparando o grupo...</p>
+    </main>
+
+    }
+
+    <!-- ERRO -->
+    @else if (errorMessage) {
+
+    <main class="cg-dashboard-state">
+
+        <h2 class="cg-heading">
+            Não foi possível abrir o grupo.
+        </h2>
+
+        <p class="cg-copy">
+            {{ errorMessage }}
+        </p>
+
+        <button type="button" class="cg-btn cg-btn--primary" (click)="backToGroups()">
+            <svg lucideArrowLeft aria-hidden="true"></svg>
+            Voltar para meus grupos
+        </button>
+
+    </main>
+
+    }
+
+    <!-- CONTEÚDO -->
+    @else if (group(); as currentGroup) {
+
+    <!-- CABEÇALHO -->
+    <header class="cg-dashboard-header">
+
+        <a routerLink="/dashboard" class="cg-brand">
+            cinegroup<span class="cg-brand__dot">.</span>
+        </a>
+
+        <nav class="cg-dashboard-nav">
+
+            <a routerLink="/dashboard" class="cg-dashboard-nav__link">
+                <svg lucideBookmark aria-hidden="true"></svg>
+                Minha lista
+            </a>
+
+            <a routerLink="/groups" class="cg-dashboard-nav__link is-active">
+                <svg lucideUsersRound aria-hidden="true"></svg>
+                Meus grupos
+            </a>
+
+        </nav>
+
+        <div class="cg-dashboard-profile">
+
+            <div class="cg-dashboard-avatar">
+                {{ userInitials }}
+            </div>
+
+            <div class="cg-dashboard-profile__info">
+                <span>{{ currentUser?.name }}</span>
+                <small>@{{ currentUser?.user }}</small>
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="cg-group-detail-container">
+
+        <!-- VOLTAR -->
+        <a routerLink="/groups" class="cg-group-back">
+            <svg lucideArrowLeft aria-hidden="true"></svg>
+            Voltar para meus grupos
+        </a>
+
+
+        <!-- INTRODUÇÃO DO GRUPO -->
+        <section class="cg-group-detail-intro">
+
+            <div class="cg-group-detail-identity">
+
+                <div class="cg-group-detail-avatar">
+                    {{ currentGroup.name.charAt(0).toUpperCase() }}
+                </div>
+
+                <div>
+
+                    <span class="cg-eyebrow">
+                        COMUNIDADE CINEGROUP
+                    </span>
+
+                    <h1 class="cg-heading">
+                        {{ currentGroup.name }}
+                    </h1>
+
+                    <p>
+                        {{
+                        currentGroup.description ||
+                        'Compartilhe suas experiências cinematográficas.'
+                        }}
+                    </p>
+
+                </div>
+
+            </div>
+
+            <button type="button" class="cg-btn cg-btn--primary cg-group-add-post" (click)="openAddPostModal()">
+                <svg lucidePlus aria-hidden="true"></svg>
+                Compartilhar filme
+            </button>
+
+        </section>
+
+        <!-- ================================================
+     CÓDIGO DE CONVITE
+================================================= -->
+
+        @if (isGroupOwner()) {
+
+        <section class="cg-group-invite">
+
+            <div class="cg-group-invite__info">
+
+                <div class="cg-group-invite__icon">
+                    <svg lucideTicket aria-hidden="true"></svg>
+                </div>
+
+                <div>
+
+                    <span class="cg-eyebrow">
+                        CONVITE DO GRUPO
+                    </span>
+
+                    <h2>
+                        Convide pessoas para o grupo
+                    </h2>
+
+                    <p>
+                        Compartilhe este código com seus amigos para que eles possam participar do grupo.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="cg-group-invite__code-area">
+
+                <div class="cg-group-invite__code">
+
+                    <span>
+                        CÓDIGO DE CONVITE
+                    </span>
+
+                    @if (currentGroup.inviteCode) {
+
+                    <strong>
+                        {{ currentGroup.inviteCode }}
+                    </strong>
+
+                    }
+
+                    @else {
+
+                    <strong class="cg-group-invite__generating">
+                        Gerando código...
+                    </strong>
+
+                    }
+
+                </div>
+
+
+                <button type="button" class="cg-group-invite__copy" [disabled]="!currentGroup.inviteCode"
+                    (click)="copyInviteCode()">
+
+                    @if (inviteCodeCopied) {
+
+                    <svg lucideCheck aria-hidden="true"></svg>
+                    Copiado!
+
+                    }
+
+                    @else {
+
+                    <svg lucideCopy aria-hidden="true"></svg>
+                    Copiar código
+
+                    }
+
+                </button>
+
+            </div>
+
+
+            @if (inviteCodeError) {
+
+            <div class="cg-group-invite__error" role="alert">
+                {{ inviteCodeError }}
+            </div>
+
+            }
+
+        </section>
+
+        }
+
+
+        <!-- DUAS COLUNAS -->
+        <div class="cg-group-detail-layout">
+
+            <!-- ====================================
+                     MURAL DE PUBLICAÇÕES
+                ===================================== -->
+
+            <section class="cg-group-feed">
+
+                <div class="cg-group-feed-heading">
+
+                    <div>
+                        <h2>Atividade do grupo</h2>
+                        <p>Filmes compartilhados pelos membros.</p>
+                    </div>
+
+                    <span>
+                        {{ posts().length }}
+                        {{ posts().length === 1 ? 'publicação' : 'publicações' }}
+                    </span>
+
+                </div>
+
+
+                <!-- PUBLICAÇÕES -->
+                @if (posts().length > 0) {
+
+                <div class="cg-group-post-list">
+
+                    @for (item of posts(); track item.post.id) {
+
+                    <article class="cg-group-post">
+
+                        <!-- AUTOR -->
+                        <div class="cg-group-post-author">
+
+                            <div class="cg-group-user-avatar">
+
+                                @if (item.author?.avatarUrl) {
+                                <img [src]="item.author!.avatarUrl" [alt]="item.author!.name" />
+                                }
+
+                                @else {
+                                {{ item.author ? getUserInitials(item.author) : '?' }}
+                                }
+
+                            </div>
+
+                            <div class="cg-group-post-author__info">
+
+                                <strong>
+                                    {{ item.author?.name ?? 'Usuário desconhecido' }}
+                                </strong>
+
+                                <span>
+                                    {{ item.post.postedAt | date:'dd/MM/yyyy HH:mm' }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- FILME -->
+                        <div class="cg-group-post-movie">
+
+                            <div class="cg-group-post-movie__poster">
+
+                                @if (item.movie?.posterUrl) {
+
+                                <img [src]="item.movie!.posterUrl" [alt]="'Pôster de ' + item.movie!.title" />
+
+                                }
+
+                                @else {
+                                <svg lucideFilm aria-hidden="true"></svg>
+                                }
+
+                            </div>
+
+                            <div class="cg-group-post-movie__info">
+
+                                <span class="cg-eyebrow">
+                                    FILME ASSISTIDO
+                                </span>
+
+                                <h3>
+                                    {{ item.movie?.title ?? 'Filme indisponível' }}
+                                </h3>
+
+                                @if (item.movie) {
+
+                                <p>
+                                    {{ item.movie.releaseYear }}
+                                    ·
+                                    {{ item.movie.director }}
+                                </p>
+
+                                <small>
+                                    {{ item.movie.genres?.join(' · ') }}
+                                </small>
+
+                                }
+
+                                @if (item.post.rating !== undefined) {
+
+                                <div class="cg-group-post-rating">
+
+                                    <svg lucideStar aria-hidden="true"></svg>
+
+                                    {{ item.post.rating }}/10
+
+                                </div>
+
+                                }
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- COMENTÁRIO -->
+                        <div class="cg-group-post-comment">
+
+                            <p>
+                                {{ item.post.comment }}
+                            </p>
+
+                        </div>
+
+                    </article>
+
+                    }
+
+                </div>
+
+                }
+
+                <!-- ESTADO VAZIO -->
+                @else {
+
+                <div class="cg-group-feed-empty">
+
+                    <div class="cg-group-feed-empty__icon">
+                        <svg lucideFilm aria-hidden="true"></svg>
+                    </div>
+
+                    <h3>
+                        O mural ainda está vazio.
+                    </h3>
+
+                    <p>
+                        Seja o primeiro a compartilhar um filme com o grupo.
+                    </p>
+
+                    <button type="button" class="cg-btn cg-btn--primary" (click)="openAddPostModal()">
+                        <svg lucidePlus aria-hidden="true"></svg>
+                        Compartilhar primeiro filme
+                    </button>
+
+                </div>
+
+                }
+
+            </section>
+
+
+            <!-- ====================================
+                     LATERAL DE MEMBROS
+                ===================================== -->
+
+            <aside class="cg-group-members">
+
+                <div class="cg-group-members-heading">
+
+                    <div>
+                        <h2>Membros</h2>
+                        <p>Participantes do grupo.</p>
+                    </div>
+
+                    <span>
+                        {{ members().length }}
+                    </span>
+
+                </div>
+
+
+                <div class="cg-group-member-list">
+
+                    @for (member of members(); track member.id) {
+
+                    <article class="cg-group-member">
+
+                        <div class="cg-group-member-avatar">
+
+                            @if (member.avatarUrl) {
+
+                            <img [src]="member.avatarUrl" [alt]="member.name" />
+
+                            }
+
+                            @else {
+
+                            {{ getUserInitials(member) }}
+
+                            }
+
+                        </div>
+
+                        <div class="cg-group-member-info">
+
+                            <strong>
+                                {{ member.name }}
+                            </strong>
+
+                            <span>
+                                @{{ member.user }}
+                            </span>
+
+                            @if (member.id === currentGroup.createdByUserId) {
+
+                            <small class="cg-group-owner-label">
+                                <svg lucideCrown aria-hidden="true"></svg>
+                                Dono do grupo
+                            </small>
+
+                            }
+
+                            @else if (member.id === currentUser?.id) {
+
+                            <small>
+                                Você
+                            </small>
+
+                            }
+
+                        </div>
+
+
+                        <!-- REMOVER MEMBRO: SOMENTE DONO -->
+                        @if (canRemoveMember(member)) {
+
+                        <button type="button" class="cg-group-member-remove" [disabled]="isRemovingMember"
+                            (click)="openRemoveMemberConfirmation(member)"
+                            [title]="'Remover ' + member.name + ' do grupo'"
+                            [attr.aria-label]="'Remover ' + member.name + ' do grupo'">
+                            <svg lucideX aria-hidden="true"></svg>
+                        </button>
+
+                        }
+
+                    </article>
+
+                    }
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </main>
+
+
+    <!-- RODAPÉ -->
+    <footer class="cg-dashboard-footer">
+
+        <span>
+            CineGroup — o filme termina, a conversa continua.
+        </span>
+
+        <span>
+            Precisa de ajuda?
+        </span>
+
+    </footer>
+
+
+    <!-- ============================================
+             MODAL DE PUBLICAÇÃO DE FILME
+        ============================================= -->
+
+    @if (isAddPostModalOpen) {
+
+    <div class="cg-group-post-modal-overlay" (click)="closeAddPostModal()">
+
+        <section class="cg-group-post-modal" role="dialog" aria-modal="true" aria-labelledby="cg-post-modal-title"
+            (click)="$event.stopPropagation()">
+
+            <header class="cg-group-post-modal-header">
+
+                <div>
+                    <span class="cg-eyebrow">
+                        COMPARTILHE SUA EXPERIÊNCIA
+                    </span>
+
+                    <h2 id="cg-post-modal-title">
+                        Novo filme
+                    </h2>
+
+                    <p>
+                        Conte para o grupo o que você achou do filme.
+                    </p>
+                </div>
+
+                <button type="button" class="cg-group-post-modal-close" [disabled]="isSavingPost"
+                    (click)="closeAddPostModal()">
+                    <svg lucideX aria-hidden="true"></svg>
+                </button>
+
+            </header>
+
+
+            <!-- PESQUISA -->
+            <div class="cg-group-post-field">
+
+                <label for="cg-group-movie-search">
+                    Pesquisar filme
+                </label>
+
+                <div class="cg-group-post-search">
+
+                    <svg lucideSearch aria-hidden="true"></svg>
+
+                    <input id="cg-group-movie-search" type="search" placeholder="Digite o nome do filme..."
+                        [value]="movieSearchQuery" (input)="onMovieSearchInput($event)" autocomplete="off" />
+
+                    @if (isSearchingMovies()) {
+                    <span class="cg-search-spinner"></span>
+                    }
+
+                </div>
+
+            </div>
+
+
+            @if (movieSearchError()) {
+
+            <div class="cg-group-post-error">
+                {{ movieSearchError() }}
+            </div>
+
+            }
+
+
+            <!-- RESULTADOS -->
+            @if (isSearchingMovies()) {
+
+            <div class="cg-group-post-message">
+                Pesquisando filmes...
+            </div>
+
+            }
+
+            @if (tmdbResults().length > 0) {
+
+            <div class="cg-group-post-search-results">
+
+                @for (movie of tmdbResults(); track movie.id) {
+
+                <button type="button" class="cg-group-post-search-result"
+                    [class.is-selected]="selectedTmdbMovie?.id === movie.id" [disabled]="isLoadingMovieDetails"
+                    (click)="selectMovie(movie)">
+
+                    @if (movie.poster_path) {
+
+                    <img [src]="getTmdbPosterUrl(movie.poster_path)" [alt]="movie.title" />
+
+                    }
+
+                    <span>
+                        <strong>{{ movie.title }}</strong>
+
+                        <small>
+                            {{ getReleaseYear(movie.release_date) }}
+                        </small>
+                    </span>
+
+                    <svg lucideCheck aria-hidden="true"></svg>
+
+                </button>
+
+                }
+
+            </div>
+
+            }
+
+
+            <!-- DETALHES DO FILME -->
+            @if (isLoadingMovieDetails) {
+
+            <div class="cg-group-post-message">
+                Carregando detalhes do filme...
+            </div>
+
+            }
+
+            @if (selectedMovieDetails) {
+
+            <div class="cg-group-post-selected">
+
+                <img [src]="getTmdbPosterUrl(selectedMovieDetails.poster_path)" [alt]="selectedMovieDetails.title" />
+
+                <div>
+
+                    <span class="cg-eyebrow">
+                        FILME SELECIONADO
+                    </span>
+
+                    <h3>
+                        {{ selectedMovieDetails.title }}
+                    </h3>
+
+                    <p>
+                        {{ getReleaseYear(selectedMovieDetails.release_date) }}
+                        · {{ selectedMovieDirector }}
+                    </p>
+
+                    <small>
+                        {{ selectedMovieGenres }}
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- COMENTÁRIO -->
+            <div class="cg-group-post-field">
+
+                <label for="cg-group-post-comment">
+                    Seu comentário
+                </label>
+
+                <textarea id="cg-group-post-comment" placeholder="O que você achou do filme? Compartilhe sua opinião..."
+                    [value]="newPostComment" (input)="onCommentInput($event)" maxlength="1000" rows="4"
+                    [disabled]="isSavingPost"></textarea>
+
+                <small>
+                    {{ newPostComment.length }}/1000 caracteres
+                </small>
+
+            </div>
+
+
+            <!-- NOTA -->
+            <div class="cg-group-post-rating-control">
+
+                <div>
+                    <label for="cg-post-rating">
+                        Sua avaliação
+                    </label>
+
+                    <p>
+                        Qual nota você daria para esse filme?
+                    </p>
+                </div>
+
+                <strong>
+                    {{ newPostRating }}/10
+                </strong>
+
+                <input id="cg-post-rating" type="range" min="0" max="10" step="0.5" [value]="newPostRating"
+                    (input)="onRatingInput($event)" [disabled]="isSavingPost" />
+
+            </div>
+
+            }
+
+
+            <!-- ERRO AO PUBLICAR -->
+            @if (addPostError) {
+
+            <div class="cg-group-post-error">
+                {{ addPostError }}
+            </div>
+
+            }
+
+
+            <!-- AÇÕES -->
+            <footer class="cg-group-post-modal-actions">
+
+                <button type="button" class="cg-btn cg-group-post-cancel" [disabled]="isSavingPost"
+                    (click)="closeAddPostModal()">
+                    Cancelar
+                </button>
+
+                <button type="button" class="cg-btn cg-btn--primary" [disabled]="
+                                !selectedMovieDetails ||
+                                newPostComment.trim().length < 3 ||
+                                isSavingPost
+                            " (click)="submitPost()">
+
+                    @if (isSavingPost) {
+                    Publicando...
+                    }
+
+                    @else {
+                    <svg lucideSend aria-hidden="true"></svg>
+                    Publicar no grupo
+                    }
+
+                </button>
+
+            </footer>
+
+        </section>
+
+    </div>
+
+    }
+
+
+    <!-- ============================================
+             CONFIRMAÇÃO DE REMOÇÃO DE MEMBRO
+        ============================================= -->
+
+    @if (memberToRemove(); as member) {
+
+    <div class="cg-delete-group-overlay" (click)="closeRemoveMemberConfirmation()">
+
+        <section class="cg-delete-group-dialog" role="alertdialog" aria-modal="true" (click)="$event.stopPropagation()">
+
+            <div class="cg-delete-group-icon">
+                <svg lucideUserX aria-hidden="true"></svg>
+            </div>
+
+            <div class="cg-delete-group-content">
+
+                <span class="cg-eyebrow">
+                    GERENCIAR MEMBROS
+                </span>
+
+                <h2>
+                    Remover membro?
+                </h2>
+
+                <p>
+                    Tem certeza de que deseja remover
+                    <strong>{{ member.name }}</strong>
+                    deste grupo?
+                </p>
+
+            </div>
+
+            @if (removeMemberError) {
+
+            <div class="cg-delete-group-error">
+                {{ removeMemberError }}
+            </div>
+
+            }
+
+            <footer class="cg-delete-group-actions">
+
+                <button type="button" class="cg-btn cg-delete-group-cancel" [disabled]="isRemovingMember"
+                    (click)="closeRemoveMemberConfirmation()">
+                    Cancelar
+                </button>
+
+                <button type="button" class="cg-btn cg-delete-group-confirm" [disabled]="isRemovingMember"
+                    (click)="confirmRemoveMember()">
+
+                    @if (isRemovingMember) {
+                    Removendo...
+                    }
+
+                    @else {
+                    <svg lucideUserX aria-hidden="true"></svg>
+                    Remover membro
+                    }
+
+                </button>
+
+            </footer>
+
+        </section>
+
+    </div>
+
+    }
+
+    }
+
+</div>

@@ -169,16 +169,6 @@
   ],
   "groups": [
     {
-      "name": "asdasd",
-      "description": "asdasd",
-      "createdByUserId": "6c03d7ab-4389-4f00-8b59-ff5827d88445",
-      "memberUserIds": [
-        "6c03d7ab-4389-4f00-8b59-ff5827d88445"
-      ],
-      "createdAt": "2026-11-23T01:56:58.769Z",
-      "id": "b0c0ca9f-8aad-40f8-b396-006fcdcc793a"
-    },
-    {
       "name": "asdas",
       "description": "asa",
       "createdByUserId": "6c03d7ab-4389-4f00-8b59-ff5827d88445",
@@ -186,7 +176,8 @@
         "6c03d7ab-4389-4f00-8b59-ff5827d88445"
       ],
       "createdAt": "2026-11-23T01:57:29.009Z",
-      "id": "2d7fcbd2-91d0-491f-b873-2ace10c031b4"
+      "id": "2d7fcbd2-91d0-491f-b873-2ace10c031b4",
+      "inviteCode": "AHPXJ-K7VM3"
     },
     {
       "name": "eqrqer",
@@ -196,7 +187,31 @@
       ],
       "createdAt": "2026-11-23T02:04:06.526Z",
       "id": "f0828f17-0c80-4181-a800-612baf278d7f"
+    },
+    {
+      "name": "Amigos do Cinema",
+      "createdByUserId": "6c03d7ab-4389-4f00-8b59-ff5827d88445",
+      "memberUserIds": [
+        "6c03d7ab-4389-4f00-8b59-ff5827d88445"
+      ],
+      "createdAt": "2026-11-23T02:20:29.775Z",
+      "id": "1fbfec6f-fc86-41ab-91bc-2e792a856c50"
     }
   ],
-  "moviePosts": []
+  "moviePosts": [
+    {
+      "groupId": "2d7fcbd2-91d0-491f-b873-2ace10c031b4",
+      "movieId": "929ebcc9-21fb-4cdd-9b83-74ea3f628e2e",
+      "authorUserId": "6c03d7ab-4389-4f00-8b59-ff5827d88445",
+      "postedAt": "2026-11-23T03:34:10.033Z",
+      "comment": "Achei loko",
+      "rating": 10,
+      "likedByUserIds": [],
+      "dislikedByUserIds": [],
+      "watchedByUserIds": [
+        "6c03d7ab-4389-4f00-8b59-ff5827d88445"
+      ],
+      "id": "6bb5f9eb-81dd-4d8b-9141-3110e4077425"
+    }
+  ]
 }

@@ -10,5 +10,6 @@ export interface Group {
   createdByUserId: string;
   memberUserIds: string[];
   createdAt: string;
+  inviteCode?: string;
 
 }
