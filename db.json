@@ -26,8 +26,9 @@
       "movieList": [
         {
           "movieId": "5102c43a-086d-4e23-8800-379637f4d420",
-          "status": "want-to-watch",
-          "addedAt": "2026-11-22T23:59:24.112Z"
+          "status": "watched",
+          "addedAt": "2026-11-22T23:59:24.112Z",
+          "watchedAt": "2026-11-23T18:29:14.545Z"
         },
         {
           "movieId": "c5a615dd-bb00-4d38-96e4-0ece8ab813e1",
@@ -36,8 +37,9 @@
         },
         {
           "movieId": "18961a9a-a31e-4fbd-8d43-08d3449fa043",
-          "status": "want-to-watch",
-          "addedAt": "2026-11-23T00:35:04.492Z"
+          "status": "watched",
+          "addedAt": "2026-11-23T00:35:04.492Z",
+          "watchedAt": "2026-11-23T18:29:16.636Z"
         },
         {
           "movieId": "89d928dd-a5f6-453b-995a-c15c6ccfcf43",
