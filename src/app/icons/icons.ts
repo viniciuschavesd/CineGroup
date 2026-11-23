@@ -8,7 +8,8 @@ import {
   LucideUsersRound,
   LucideMessageCircle,
   LucideCheck,
-  LucideX
+  LucideX,
+  LucideEye
 } from '@lucide/angular';
 
 export const CINEGROUP_ICONS = [
@@ -21,5 +22,6 @@ export const CINEGROUP_ICONS = [
   LucideUsersRound,
   LucideMessageCircle,
   LucideCheck,
-  LucideX
+  LucideX,
+  LucideEye
 ];

@@ -67,9 +67,8 @@
         },
         {
           "movieId": "158b50c0-d0a1-43d5-975b-16c98cca2998",
-          "status": "watched",
-          "addedAt": "2026-11-23T00:44:54.035Z",
-          "watchedAt": "2026-11-23T00:45:37.619Z"
+          "status": "want-to-watch",
+          "addedAt": "2026-11-23T00:44:54.035Z"
         }
       ]
     }
