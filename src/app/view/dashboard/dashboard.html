@@ -61,10 +61,7 @@
                 {{ userInitials }}
             </div>
 
-            <div class="cg-dashboard-profile__info">
-                <span>{{ currentUser.name }}</span>
-                <small>@{{ currentUser.user }}</small>
-            </div>
+            <app-profile-menu [user]="currentUser" />
 
         </div>
 
@@ -132,10 +129,10 @@
 
                 </div>
                 @if (movieActionError()) {
-    <p class="cg-dashboard-action-error" role="alert">
-        {{ movieActionError() }}
-    </p>
-}
+                <p class="cg-dashboard-action-error" role="alert">
+                    {{ movieActionError() }}
+                </p>
+                }
                 <!-- FILMES CADASTRADOS -->
                 @if (filteredMovies.length > 0) {
 
@@ -315,7 +312,7 @@
 
                             </div>
 
-                        
+
                             @if (group.description) {
 
                             <p class="cg-dashboard-group__description">

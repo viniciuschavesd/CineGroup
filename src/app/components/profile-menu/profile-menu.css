@@ -1,0 +1,232 @@
+
+:host {
+    display: block;
+    justify-self: end;
+    position: relative;
+    z-index: 1000;
+}
+
+
+/* =====================================================
+   PERFIL
+===================================================== */
+
+.cg-profile-menu {
+    position: relative;
+}
+
+.cg-profile-menu__trigger {
+    min-height: 2.8rem;
+
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+
+    padding: 0.35rem 0.6rem;
+
+    color: var(--cg-color-text);
+
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--cg-radius-md);
+
+    cursor: pointer;
+
+    text-align: left;
+    font: inherit;
+
+    transition:
+        background var(--cg-transition-fast),
+        border-color var(--cg-transition-fast);
+}
+
+.cg-profile-menu__trigger:hover,
+.cg-profile-menu__trigger[aria-expanded="true"] {
+    background: var(--cg-color-surface);
+    border-color: var(--cg-color-border);
+}
+
+
+/* =====================================================
+   AVATAR
+===================================================== */
+
+.cg-profile-menu__avatar {
+    width: 2rem;
+    height: 2rem;
+
+    flex-shrink: 0;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+
+    background: var(--cg-color-primary-soft);
+    color: var(--cg-color-primary);
+
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+
+/* =====================================================
+   INFORMAÇÕES DO USUÁRIO
+===================================================== */
+
+.cg-profile-menu__info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+}
+
+.cg-profile-menu__name {
+    color: var(--cg-color-text);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.cg-profile-menu__username {
+    color: var(--cg-color-text-muted);
+    font-size: 0.68rem;
+}
+
+
+/* =====================================================
+   SETA
+===================================================== */
+
+.cg-profile-menu__chevron {
+    margin-left: 0.25rem;
+
+    color: var(--cg-color-text-muted);
+
+    font-size: 1rem;
+
+    transition: transform var(--cg-transition-fast);
+}
+
+.cg-profile-menu__chevron.is-open {
+    transform: rotate(180deg);
+}
+
+
+/* =====================================================
+   DROPDOWN
+===================================================== */
+
+.cg-profile-menu__dropdown {
+    position: absolute;
+
+    top: calc(100% + 0.6rem);
+    right: 0;
+
+    width: 15rem;
+
+    padding: 0.45rem;
+
+    background: var(--cg-color-surface);
+
+    border: 1px solid var(--cg-color-border);
+    border-radius: var(--cg-radius-lg);
+
+    box-shadow: var(--cg-shadow-card);
+
+    animation: cg-profile-menu-appear 160ms ease;
+
+    z-index: 1001;
+}
+
+
+/* =====================================================
+   CABEÇALHO DO DROPDOWN
+===================================================== */
+
+.cg-profile-menu__header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+
+    padding: 0.75rem 0.8rem;
+    margin-bottom: 0.35rem;
+
+    border-bottom: 1px solid var(--cg-color-border);
+}
+
+.cg-profile-menu__header-name {
+    color: var(--cg-color-text);
+
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.cg-profile-menu__header-username {
+    color: var(--cg-color-text-muted);
+
+    font-size: 0.68rem;
+}
+
+
+/* =====================================================
+   BOTÃO SAIR
+===================================================== */
+
+.cg-profile-menu__logout {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+
+    padding: 0.75rem 0.8rem;
+
+    color: #f87171;
+
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--cg-radius-md);
+
+    font: inherit;
+    font-size: 0.76rem;
+    font-weight: 600;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        background var(--cg-transition-fast),
+        border-color var(--cg-transition-fast);
+}
+
+.cg-profile-menu__logout:hover {
+    background: rgb(248 113 113 / 9%);
+    border-color: rgb(248 113 113 / 18%);
+}
+
+.cg-profile-menu__logout svg {
+    width: 1rem;
+    height: 1rem;
+
+    flex-shrink: 0;
+}
+
+
+/* =====================================================
+   ANIMAÇÃO
+===================================================== */
+
+@keyframes cg-profile-menu-appear {
+
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}

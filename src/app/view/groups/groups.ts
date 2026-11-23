@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 
 import { Router, RouterModule } from '@angular/router';
-
+import { ProfileMenu } from '../../components/profile-menu/profile-menu';
 import {
     finalize,
     forkJoin,
@@ -28,8 +28,7 @@ import { MoviePostService } from '../../services/moviepost';
 
 import type {
     User,
-    Group,
-    MoviePost
+    Group
 } from '../../models';
 
 @Component({
@@ -38,6 +37,7 @@ import type {
     imports: [
         CommonModule,
         RouterModule,
+        ProfileMenu,
         ...CINEGROUP_ICONS
     ],
     templateUrl: './groups.html',
@@ -95,6 +95,43 @@ export class Groups implements OnInit {
 
     isJoiningGroup = false;
     joinGroupError = '';
+
+
+    // =====================================================
+    // EDIÇÃO DE GRUPOS
+    // =====================================================
+
+    isEditGroupModalOpen = false;
+
+    groupBeingEdited: Group | null = null;
+
+    editGroupName = '';
+    editGroupDescription = '';
+
+    isSavingGroupChanges = false;
+    editGroupError = '';
+
+
+    // =====================================================
+    // EXCLUSÃO DE GRUPOS
+    // =====================================================
+
+    groupToDelete: Group | null = null;
+
+    isDeletingGroup = false;
+
+    deleteGroupError = '';
+
+
+    // =====================================================
+    // SAIR DE UM GRUPO
+    // =====================================================
+
+    groupToLeave: Group | null = null;
+
+    isLeavingGroup = false;
+
+    leaveGroupError = '';
 
 
     // =====================================================
@@ -172,8 +209,12 @@ export class Groups implements OnInit {
 
             finalize(() => {
 
-                this.loading = false;
-                this.cdr.detectChanges();
+                this.ngZone.run(() => {
+
+                    this.loading = false;
+                    this.cdr.detectChanges();
+
+                });
 
             })
 
@@ -203,7 +244,7 @@ export class Groups implements OnInit {
                 // Calcula a data da publicação mais recente de cada grupo
                 const latestPostDates: Record<string, string> = {};
 
-                data.posts.forEach(post => {
+                (data.posts ?? []).forEach(post => {
 
                     if (!post.groupId || !post.postedAt) {
                         return;
@@ -224,7 +265,13 @@ export class Groups implements OnInit {
                 });
 
                 // Atualiza o Signal das datas
-                this.lastPostDates.set(latestPostDates);
+                this.ngZone.run(() => {
+
+                    this.lastPostDates.set(latestPostDates);
+
+                    this.cdr.detectChanges();
+
+                });
 
             },
 
@@ -235,10 +282,14 @@ export class Groups implements OnInit {
                     error
                 );
 
-                this.errorMessage =
-                    'Não foi possível carregar seus grupos. Verifique se o JSON Server está funcionando.';
+                this.ngZone.run(() => {
 
-                this.cdr.detectChanges();
+                    this.errorMessage =
+                        'Não foi possível carregar seus grupos. Verifique se o JSON Server está funcionando.';
+
+                    this.cdr.detectChanges();
+
+                });
 
             }
 
@@ -712,6 +763,385 @@ export class Groups implements OnInit {
 
 
     // =====================================================
+    // EDITAR GRUPO
+    // =====================================================
+
+    openEditGroupModal(group: Group): void {
+
+        // Somente o dono pode editar
+        if (!this.isGroupOwner(group)) {
+            return;
+        }
+
+        // Guarda o grupo que será editado
+        this.groupBeingEdited = group;
+
+        // Preenche os campos com os dados atuais
+        this.editGroupName = group.name;
+        this.editGroupDescription = group.description ?? '';
+
+        this.editGroupError = '';
+
+        // Abre o modal
+        this.isEditGroupModalOpen = true;
+
+        this.cdr.detectChanges();
+
+    }
+
+
+    closeEditGroupModal(): void {
+
+        // Impede fechar durante o salvamento
+        if (this.isSavingGroupChanges) {
+            return;
+        }
+
+        this.isEditGroupModalOpen = false;
+
+        this.groupBeingEdited = null;
+
+        this.editGroupName = '';
+        this.editGroupDescription = '';
+
+        this.editGroupError = '';
+
+    }
+
+
+    // =====================================================
+    // CAMPOS DO FORMULÁRIO DE EDIÇÃO
+    // =====================================================
+
+    onEditGroupNameInput(event: Event): void {
+
+        const input = event.target as HTMLInputElement;
+
+        this.editGroupName = input.value;
+
+        this.editGroupError = '';
+
+    }
+
+
+    onEditGroupDescriptionInput(event: Event): void {
+
+        const input = event.target as HTMLTextAreaElement;
+
+        this.editGroupDescription = input.value;
+
+        this.editGroupError = '';
+
+    }
+
+
+    // =====================================================
+    // SALVAR ALTERAÇÕES DO GRUPO
+    // =====================================================
+
+    submitEditGroup(event: Event): void {
+
+        event.preventDefault();
+
+        const group = this.groupBeingEdited;
+        const user = this.currentUser;
+
+        if (
+            !group ||
+            !user ||
+            !this.isGroupOwner(group) ||
+            this.isSavingGroupChanges
+        ) {
+            return;
+        }
+
+        const name = this.editGroupName.trim();
+        const description = this.editGroupDescription.trim();
+
+        // Validação do nome
+        if (name.length < 3) {
+
+            this.editGroupError =
+                'O nome do grupo precisa ter pelo menos 3 caracteres.';
+
+            return;
+
+        }
+
+        if (name.length > 40) {
+
+            this.editGroupError =
+                'O nome do grupo pode ter no máximo 40 caracteres.';
+
+            return;
+
+        }
+
+        // Validação da descrição
+        if (description.length > 160) {
+
+            this.editGroupError =
+                'A descrição pode ter no máximo 160 caracteres.';
+
+            return;
+
+        }
+
+        this.isSavingGroupChanges = true;
+        this.editGroupError = '';
+
+        // Dados que serão atualizados no JSON Server
+        // String vazia permite apagar a descrição anterior
+        const updatedData: Partial<Group> = {
+            name,
+            description
+        };
+
+        console.log(
+            '[Groups] Atualizando grupo:',
+            group.id,
+            updatedData
+        );
+
+        this.groupService.updateGroup(
+            group.id,
+            updatedData
+        ).pipe(
+
+            take(1),
+
+            finalize(() => {
+
+                this.ngZone.run(() => {
+
+                    this.isSavingGroupChanges = false;
+
+                    this.cdr.detectChanges();
+
+                });
+
+            })
+
+        ).subscribe({
+
+            next: updatedGroup => {
+
+                this.ngZone.run(() => {
+
+                    console.log(
+                        '[Groups] Grupo atualizado:',
+                        updatedGroup
+                    );
+
+                    // Atualiza o grupo no Signal
+                    this.groups.update(currentGroups =>
+                        currentGroups.map(item =>
+                            item.id === updatedGroup.id
+                                ? updatedGroup
+                                : item
+                        )
+                    );
+
+                    // Fecha o modal
+                    this.isEditGroupModalOpen = false;
+
+                    this.groupBeingEdited = null;
+
+                    // Limpa o formulário
+                    this.editGroupName = '';
+                    this.editGroupDescription = '';
+                    this.editGroupError = '';
+
+                    this.cdr.detectChanges();
+
+                });
+
+            },
+
+            error: error => {
+
+                console.error(
+                    '[Groups] Erro ao editar grupo:',
+                    error
+                );
+
+                this.ngZone.run(() => {
+
+                    this.editGroupError =
+                        'Não foi possível salvar as alterações. Tente novamente.';
+
+                    this.cdr.detectChanges();
+
+                });
+
+            }
+
+        });
+
+    }
+
+
+    // =====================================================
+    // SAIR DE UM GRUPO
+    // =====================================================
+
+    openLeaveGroupConfirmation(group: Group): void {
+
+        const user = this.currentUser;
+
+        // O dono não pode sair do próprio grupo
+        if (!user || this.isGroupOwner(group)) {
+            return;
+        }
+
+        // Verifica se o usuário realmente participa do grupo
+        const members = group.memberUserIds ?? [];
+
+        if (!members.includes(user.id)) {
+            return;
+        }
+
+        this.groupToLeave = group;
+
+        this.leaveGroupError = '';
+
+        this.cdr.detectChanges();
+
+    }
+
+
+    closeLeaveGroupConfirmation(): void {
+
+        // Impede fechar durante a operação
+        if (this.isLeavingGroup) {
+            return;
+        }
+
+        this.groupToLeave = null;
+
+        this.leaveGroupError = '';
+
+    }
+
+
+    // =====================================================
+    // CONFIRMAR SAÍDA DO GRUPO
+    // =====================================================
+
+    confirmLeaveGroup(): void {
+
+        const group = this.groupToLeave;
+        const user = this.currentUser;
+
+        if (
+            !group ||
+            !user ||
+            this.isGroupOwner(group) ||
+            this.isLeavingGroup
+        ) {
+            return;
+        }
+
+        const currentMembers = group.memberUserIds ?? [];
+
+        // Confere se o usuário ainda está no grupo
+        if (!currentMembers.includes(user.id)) {
+
+            this.leaveGroupError =
+                'Você não faz mais parte deste grupo.';
+
+            return;
+
+        }
+
+        // Remove somente o usuário atual
+        const updatedMemberIds = currentMembers.filter(
+            memberId => memberId !== user.id
+        );
+
+        this.isLeavingGroup = true;
+        this.leaveGroupError = '';
+
+        console.log(
+            '[Groups] Saindo do grupo:',
+            group.name
+        );
+
+        // Atualiza somente os membros no JSON Server
+        this.groupService.updateGroup(
+            group.id,
+            {
+                memberUserIds: updatedMemberIds
+            }
+        ).pipe(
+
+            take(1),
+
+            finalize(() => {
+
+                this.ngZone.run(() => {
+
+                    this.isLeavingGroup = false;
+
+                    this.cdr.detectChanges();
+
+                });
+
+            })
+
+        ).subscribe({
+
+            next: updatedGroup => {
+
+                this.ngZone.run(() => {
+
+                    console.log(
+                        '[Groups] Você saiu do grupo:',
+                        updatedGroup
+                    );
+
+                    // Remove o card do usuário atual
+                    this.groups.update(currentGroups =>
+                        currentGroups.filter(
+                            item => item.id !== updatedGroup.id
+                        )
+                    );
+
+                    // Fecha o modal
+                    this.groupToLeave = null;
+
+                    this.leaveGroupError = '';
+
+                    this.cdr.detectChanges();
+
+                });
+
+            },
+
+            error: error => {
+
+                console.error(
+                    '[Groups] Erro ao sair do grupo:',
+                    error
+                );
+
+                this.ngZone.run(() => {
+
+                    this.leaveGroupError =
+                        'Não foi possível sair do grupo. Verifique sua conexão e tente novamente.';
+
+                    this.cdr.detectChanges();
+
+                });
+
+            }
+
+        });
+
+    }
+
+
+    // =====================================================
     // INFORMAÇÕES DA PÁGINA
     // =====================================================
 
@@ -755,15 +1185,8 @@ export class Groups implements OnInit {
 
 
     // =====================================================
-    // AÇÕES DOS GRUPOS
+    // VERIFICAÇÃO DE PROPRIEDADE DO GRUPO
     // =====================================================
-
-    groupToDelete: Group | null = null;
-
-    isDeletingGroup = false;
-
-    deleteGroupError = '';
-
 
     isGroupOwner(group: Group): boolean {
 
@@ -785,6 +1208,8 @@ export class Groups implements OnInit {
         this.groupToDelete = group;
 
         this.deleteGroupError = '';
+
+        this.cdr.detectChanges();
 
     }
 

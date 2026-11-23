@@ -1,0 +1,87 @@
+
+<div class="cg-profile-menu">
+
+    <!-- BOTÃO DO PERFIL -->
+    <button
+        type="button"
+        class="cg-profile-menu__trigger"
+        aria-label="Abrir menu da conta"
+        aria-haspopup="menu"
+        [attr.aria-expanded]="isOpen"
+        aria-controls="cg-profile-menu-dropdown"
+        (click)="toggleMenu($event)">
+
+        <!-- AVATAR -->
+        <span class="cg-profile-menu__avatar">
+            {{ userInitials }}
+        </span>
+
+        <!-- INFORMAÇÕES -->
+        <span class="cg-profile-menu__info">
+
+            <span class="cg-profile-menu__name">
+                {{ user.name }}
+            </span>
+
+            <span class="cg-profile-menu__username">
+                @{{ user.user }}
+            </span>
+
+        </span>
+
+        <!-- SETA -->
+        <span
+            class="cg-profile-menu__chevron"
+            [class.is-open]="isOpen"
+            aria-hidden="true">
+
+            ⌄
+
+        </span>
+
+    </button>
+
+
+    <!-- MENU DROPDOWN -->
+    @if (isOpen) {
+
+    <div
+        id="cg-profile-menu-dropdown"
+        class="cg-profile-menu__dropdown"
+        role="menu"
+        (click)="$event.stopPropagation()">
+
+        <!-- IDENTIFICAÇÃO -->
+        <div class="cg-profile-menu__header">
+
+            <span class="cg-profile-menu__header-name">
+                {{ user.name }}
+            </span>
+
+            <span class="cg-profile-menu__header-username">
+                @{{ user.user }}
+            </span>
+
+        </div>
+
+
+        <!-- SAIR -->
+        <button
+            type="button"
+            class="cg-profile-menu__logout"
+            role="menuitem"
+            (click)="logout($event)">
+
+            <svg lucideLogOut aria-hidden="true"></svg>
+
+            <span>
+                Sair da conta
+            </span>
+
+        </button>
+
+    </div>
+
+    }
+
+</div>

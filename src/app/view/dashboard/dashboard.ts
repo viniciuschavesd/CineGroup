@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-
+import { ProfileMenu } from '../../components/profile-menu/profile-menu';
 import {
     catchError,
     debounceTime,
@@ -70,6 +70,7 @@ interface DashboardGroup extends Group {
     imports: [
         CommonModule,
         RouterModule,
+        ProfileMenu,
         ...CINEGROUP_ICONS
     ],
     templateUrl: './dashboard.html',

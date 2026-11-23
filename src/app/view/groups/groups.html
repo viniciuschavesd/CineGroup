@@ -1,4 +1,3 @@
-
 <div class="cg-page cg-groups-page">
 
     <!-- ================================================
@@ -36,7 +35,9 @@
         </p>
 
         <button type="button" class="cg-btn cg-btn--primary" (click)="loadGroups()">
+
             Tentar novamente
+
         </button>
 
     </main>
@@ -53,42 +54,32 @@
     <header class="cg-dashboard-header">
 
         <a routerLink="/dashboard" class="cg-brand" aria-label="CineGroup">
+
             cinegroup<span class="cg-brand__dot">.</span>
+
         </a>
 
         <nav class="cg-dashboard-nav">
 
             <a routerLink="/dashboard" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }"
                 class="cg-dashboard-nav__link">
+
                 <svg lucideBookmark aria-hidden="true"></svg>
                 Minha lista
+
             </a>
 
             <a routerLink="/groups" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }"
                 class="cg-dashboard-nav__link" ariaCurrentWhenActive="page">
+
                 <svg lucideUsersRound aria-hidden="true"></svg>
                 Meus grupos
+
             </a>
 
         </nav>
 
-        <div class="cg-dashboard-profile">
-
-            <div class="cg-dashboard-avatar">
-                {{ userInitials }}
-            </div>
-
-            <div class="cg-dashboard-profile__info">
-
-                <span>{{ currentUser.name }}</span>
-
-                <small>
-                    @{{ currentUser.user }}
-                </small>
-
-            </div>
-
-        </div>
+        <app-profile-menu [user]="currentUser" />
 
     </header>
 
@@ -123,8 +114,7 @@
             <div class="cg-groups-intro__actions">
 
                 <!-- ENTRAR EM GRUPO -->
-                <button type="button" class="cg-btn cg-btn--outline cg-groups-join"
-                    (click)="openJoinGroupModal()">
+                <button type="button" class="cg-btn cg-btn--outline cg-groups-join" (click)="openJoinGroupModal()">
 
                     <span>↗</span>
                     Entrar em grupo
@@ -132,8 +122,7 @@
                 </button>
 
                 <!-- CRIAR GRUPO -->
-                <button type="button" class="cg-btn cg-btn--primary cg-groups-create"
-                    (click)="openCreateGroupModal()">
+                <button type="button" class="cg-btn cg-btn--primary cg-groups-create" (click)="openCreateGroupModal()">
 
                     <span>+</span>
                     Criar grupo
@@ -186,7 +175,7 @@
 
                     <div class="cg-group-card__top">
 
-                        <!-- ÍCONE E ACESSO AO GRUPO -->
+                        <!-- IDENTIDADE DO GRUPO -->
                         <div class="cg-group-card__identity">
 
                             <div class="cg-group-card__avatar">
@@ -195,13 +184,17 @@
 
                         </div>
 
+
+                        <!-- ACESSAR GRUPO -->
                         <a [routerLink]="['/groups', group.id]" class="cg-group-card__open"
                             [attr.aria-label]="'Ver grupo ' + group.name">
 
                             Ver grupo
+
                             <svg lucideArrowRight aria-hidden="true"></svg>
 
                         </a>
+
 
                         <!-- QUANTIDADE DE MEMBROS -->
                         <span class="cg-group-card__members">
@@ -211,9 +204,9 @@
                             {{ group.memberUserIds?.length ?? 0 }}
 
                             {{
-                                group.memberUserIds?.length === 1
-                                ? 'membro'
-                                : 'membros'
+                            group.memberUserIds?.length === 1
+                            ? 'membro'
+                            : 'membros'
                             }}
 
                         </span>
@@ -230,8 +223,8 @@
 
                         <p>
                             {{
-                                group.description ||
-                                'Um espaço para compartilhar filmes e conversar sobre cinema.'
+                            group.description ||
+                            'Um espaço para compartilhar filmes e conversar sobre cinema.'
                             }}
                         </p>
 
@@ -253,6 +246,7 @@
                             </span>
 
                         </div>
+
 
                         <!-- ÚLTIMA PUBLICAÇÃO -->
                         <div class="cg-group-card__date cg-group-card__date--updated">
@@ -288,38 +282,51 @@
                         @if (isGroupOwner(group)) {
 
                         <!-- EDITAR -->
-                        <button type="button" class="cg-group-action cg-group-action--edit" disabled
-                            title="Editar detalhes estará disponível em breve"
+                        <button type="button" class="cg-group-action cg-group-action--edit"
+                            (click)="openEditGroupModal(group)" title="Editar detalhes do grupo"
                             aria-label="Editar detalhes do grupo">
 
                             <svg lucidePencil aria-hidden="true"></svg>
-                            <span>Editar</span>
+
+                            <span>
+                                Editar
+                            </span>
 
                         </button>
 
+
                         <!-- EXCLUIR -->
                         <button type="button" class="cg-group-action cg-group-action--delete"
-                            [disabled]="isDeletingGroup"
-                            (click)="openDeleteGroupConfirmation(group)"
-                            title="Excluir grupo"
-                            aria-label="Excluir grupo">
+                            [disabled]="isDeletingGroup" (click)="openDeleteGroupConfirmation(group)"
+                            title="Excluir grupo" aria-label="Excluir grupo">
 
                             <svg lucideTrash aria-hidden="true"></svg>
-                            <span>Excluir</span>
+
+                            <span>
+                                Excluir
+                            </span>
 
                         </button>
 
                         }
 
+                        <!-- AÇÕES DOS DEMAIS MEMBROS -->
+                        @else {
+
                         <!-- SAIR DO GRUPO -->
-                        <button type="button" class="cg-group-action cg-group-action--leave" disabled
-                            title="Sair do grupo estará disponível em breve"
+                        <button type="button" class="cg-group-action cg-group-action--leave" [disabled]="isLeavingGroup"
+                            (click)="openLeaveGroupConfirmation(group)" title="Sair do grupo"
                             aria-label="Sair do grupo">
 
                             <svg lucideLogOut aria-hidden="true"></svg>
-                            <span>Sair</span>
+
+                            <span>
+                                Sair
+                            </span>
 
                         </button>
+
+                        }
 
                     </div>
 
@@ -359,8 +366,7 @@
                 Crie seu primeiro grupo ou aceite um convite para participar.
             </span>
 
-            <button type="button" class="cg-btn cg-btn--primary"
-                (click)="openCreateGroupModal()">
+            <button type="button" class="cg-btn cg-btn--primary" (click)="openCreateGroupModal()">
 
                 <span>+</span>
                 Criar primeiro grupo
@@ -399,11 +405,10 @@
 
     <div class="cg-create-group-overlay" (click)="closeJoinGroupModal()">
 
-        <section class="cg-create-group-dialog" role="dialog" aria-modal="true"
-            aria-labelledby="cg-join-group-title"
+        <section class="cg-create-group-dialog" role="dialog" aria-modal="true" aria-labelledby="cg-join-group-title"
             (click)="$event.stopPropagation()">
 
-            <!-- CABEÇALHO DO MODAL -->
+            <!-- CABEÇALHO -->
             <header class="cg-create-group-header">
 
                 <div>
@@ -422,9 +427,7 @@
 
                 </div>
 
-                <button type="button" class="cg-create-group-close"
-                    aria-label="Fechar"
-                    [disabled]="isJoiningGroup"
+                <button type="button" class="cg-create-group-close" aria-label="Fechar" [disabled]="isJoiningGroup"
                     (click)="closeJoinGroupModal()">
 
                     <svg lucideX aria-hidden="true"></svg>
@@ -437,7 +440,6 @@
             <!-- FORMULÁRIO -->
             <form class="cg-create-group-form" (submit)="submitJoinGroup($event)">
 
-                <!-- CÓDIGO DE CONVITE -->
                 <div class="cg-create-group-field">
 
                     <label for="cg-group-invite-code">
@@ -448,19 +450,10 @@
 
                     </label>
 
-                    <input id="cg-group-invite-code"
-                        type="text"
-                        placeholder="ABCDE-12345"
-                        [value]="inviteCodeInput"
-                        (input)="onInviteCodeInput($event)"
-                        maxlength="11"
-                        minlength="11"
-                        pattern="[A-Za-z0-9]{5}-[A-Za-z0-9]{5}"
-                        required
-                        autocomplete="off"
-                        autocapitalize="characters"
-                        spellcheck="false"
-                        [disabled]="isJoiningGroup" />
+                    <input id="cg-group-invite-code" type="text" placeholder="ABCDE-12345" [value]="inviteCodeInput"
+                        (input)="onInviteCodeInput($event)" maxlength="11" minlength="11"
+                        pattern="[A-Za-z0-9]{5}-[A-Za-z0-9]{5}" required autocomplete="off" autocapitalize="characters"
+                        spellcheck="false" [disabled]="isJoiningGroup" />
 
                     <small>
                         Digite o código de 10 caracteres fornecido por um membro do grupo.
@@ -469,7 +462,6 @@
                 </div>
 
 
-                <!-- INFORMAÇÃO -->
                 <div class="cg-create-group-info">
 
                     <svg lucideUsersRound aria-hidden="true"></svg>
@@ -481,7 +473,6 @@
                 </div>
 
 
-                <!-- ERRO -->
                 @if (joinGroupError) {
 
                 <div class="cg-create-group-error" role="alert">
@@ -494,9 +485,7 @@
                 <!-- AÇÕES -->
                 <footer class="cg-create-group-actions">
 
-                    <!-- CANCELAR -->
-                    <button type="button" class="cg-btn cg-create-group-cancel"
-                        [disabled]="isJoiningGroup"
+                    <button type="button" class="cg-btn cg-create-group-cancel" [disabled]="isJoiningGroup"
                         (click)="closeJoinGroupModal()">
 
                         Cancelar
@@ -504,7 +493,6 @@
                     </button>
 
 
-                    <!-- ENTRAR -->
                     <button type="submit" class="cg-btn cg-btn--primary"
                         [disabled]="isJoiningGroup || inviteCodeInput.length !== 11">
 
@@ -543,11 +531,10 @@
 
     <div class="cg-create-group-overlay" (click)="closeCreateGroupModal()">
 
-        <section class="cg-create-group-dialog" role="dialog" aria-modal="true"
-            aria-labelledby="cg-create-group-title"
+        <section class="cg-create-group-dialog" role="dialog" aria-modal="true" aria-labelledby="cg-create-group-title"
             (click)="$event.stopPropagation()">
 
-            <!-- CABEÇALHO DO MODAL -->
+            <!-- CABEÇALHO -->
             <header class="cg-create-group-header">
 
                 <div>
@@ -566,9 +553,7 @@
 
                 </div>
 
-                <button type="button" class="cg-create-group-close"
-                    aria-label="Fechar"
-                    [disabled]="isCreatingGroup"
+                <button type="button" class="cg-create-group-close" aria-label="Fechar" [disabled]="isCreatingGroup"
                     (click)="closeCreateGroupModal()">
 
                     <svg lucideX aria-hidden="true"></svg>
@@ -592,15 +577,8 @@
 
                     </label>
 
-                    <input id="cg-group-name"
-                        type="text"
-                        placeholder="Ex.: Amigos do Cinema"
-                        [value]="newGroupName"
-                        (input)="onGroupNameInput($event)"
-                        maxlength="40"
-                        minlength="3"
-                        required
-                        autocomplete="off"
+                    <input id="cg-group-name" type="text" placeholder="Ex.: Amigos do Cinema" [value]="newGroupName"
+                        (input)="onGroupNameInput($event)" maxlength="40" minlength="3" required autocomplete="off"
                         [disabled]="isCreatingGroup" />
 
                     <small>
@@ -623,12 +601,8 @@
 
                     </label>
 
-                    <textarea id="cg-group-description"
-                        placeholder="Conte um pouco sobre seu grupo..."
-                        [value]="newGroupDescription"
-                        (input)="onGroupDescriptionInput($event)"
-                        maxlength="160"
-                        rows="4"
+                    <textarea id="cg-group-description" placeholder="Conte um pouco sobre seu grupo..."
+                        [value]="newGroupDescription" (input)="onGroupDescriptionInput($event)" maxlength="160" rows="4"
                         [disabled]="isCreatingGroup"></textarea>
 
                     <small>
@@ -663,13 +637,13 @@
                 <!-- AÇÕES -->
                 <footer class="cg-create-group-actions">
 
-                    <button type="button" class="cg-btn cg-create-group-cancel"
-                        [disabled]="isCreatingGroup"
+                    <button type="button" class="cg-btn cg-create-group-cancel" [disabled]="isCreatingGroup"
                         (click)="closeCreateGroupModal()">
 
                         Cancelar
 
                     </button>
+
 
                     <button type="submit" class="cg-btn cg-btn--primary"
                         [disabled]="isCreatingGroup || newGroupName.trim().length < 3">
@@ -702,6 +676,158 @@
 
 
     <!-- ============================================
+         MODAL DE EDIÇÃO DE GRUPO
+    ============================================= -->
+
+    @if (isEditGroupModalOpen && groupBeingEdited) {
+
+    <div class="cg-create-group-overlay" (click)="closeEditGroupModal()">
+
+        <section class="cg-create-group-dialog" role="dialog" aria-modal="true" aria-labelledby="cg-edit-group-title"
+            (click)="$event.stopPropagation()">
+
+            <!-- CABEÇALHO -->
+            <header class="cg-create-group-header">
+
+                <div>
+
+                    <span class="cg-eyebrow">
+                        CONFIGURAÇÕES DO GRUPO
+                    </span>
+
+                    <h2 id="cg-edit-group-title">
+                        Editar grupo
+                    </h2>
+
+                    <p>
+                        Atualize as informações do seu grupo.
+                    </p>
+
+                </div>
+
+                <button type="button" class="cg-create-group-close" aria-label="Fechar"
+                    [disabled]="isSavingGroupChanges" (click)="closeEditGroupModal()">
+
+                    <svg lucideX aria-hidden="true"></svg>
+
+                </button>
+
+            </header>
+
+
+            <!-- FORMULÁRIO -->
+            <form class="cg-create-group-form" (submit)="submitEditGroup($event)">
+
+                <!-- NOME -->
+                <div class="cg-create-group-field">
+
+                    <label for="cg-edit-group-name">
+
+                        Nome do grupo
+
+                        <span>*</span>
+
+                    </label>
+
+                    <input id="cg-edit-group-name" type="text" placeholder="Nome do grupo" [value]="editGroupName"
+                        (input)="onEditGroupNameInput($event)" maxlength="40" minlength="3" required autocomplete="off"
+                        [disabled]="isSavingGroupChanges" />
+
+                    <small>
+                        Escolha um nome para identificar seu grupo.
+                    </small>
+
+                </div>
+
+
+                <!-- DESCRIÇÃO -->
+                <div class="cg-create-group-field">
+
+                    <label for="cg-edit-group-description">
+
+                        Descrição
+
+                        <span class="cg-create-group-optional">
+                            Opcional
+                        </span>
+
+                    </label>
+
+                    <textarea id="cg-edit-group-description" placeholder="Conte um pouco sobre seu grupo..."
+                        [value]="editGroupDescription" (input)="onEditGroupDescriptionInput($event)" maxlength="160"
+                        rows="4" [disabled]="isSavingGroupChanges"></textarea>
+
+                    <small>
+                        {{ editGroupDescription.length }}/160 caracteres
+                    </small>
+
+                </div>
+
+
+                <!-- INFORMAÇÃO -->
+                <div class="cg-create-group-info">
+
+                    <svg lucidePencil aria-hidden="true"></svg>
+
+                    <p>
+                        As alterações serão exibidas para todos os membros do grupo.
+                    </p>
+
+                </div>
+
+
+                <!-- ERRO -->
+                @if (editGroupError) {
+
+                <div class="cg-create-group-error" role="alert">
+                    {{ editGroupError }}
+                </div>
+
+                }
+
+
+                <!-- AÇÕES -->
+                <footer class="cg-create-group-actions">
+
+                    <button type="button" class="cg-btn cg-create-group-cancel" [disabled]="isSavingGroupChanges"
+                        (click)="closeEditGroupModal()">
+
+                        Cancelar
+
+                    </button>
+
+
+                    <button type="submit" class="cg-btn cg-btn--primary"
+                        [disabled]="isSavingGroupChanges || editGroupName.trim().length < 3">
+
+                        @if (isSavingGroupChanges) {
+
+                        <span class="cg-create-group-spinner"></span>
+                        Salvando...
+
+                        }
+
+                        @else {
+
+                        <svg lucideCheck aria-hidden="true"></svg>
+                        Salvar alterações
+
+                        }
+
+                    </button>
+
+                </footer>
+
+            </form>
+
+        </section>
+
+    </div>
+
+    }
+
+
+    <!-- ============================================
          MODAL DE CONFIRMAÇÃO DE EXCLUSÃO
     ============================================= -->
 
@@ -710,8 +836,7 @@
     <div class="cg-delete-group-overlay" (click)="closeDeleteGroupConfirmation()">
 
         <section class="cg-delete-group-dialog" role="alertdialog" aria-modal="true"
-            aria-labelledby="cg-delete-group-title"
-            (click)="$event.stopPropagation()">
+            aria-labelledby="cg-delete-group-title" (click)="$event.stopPropagation()">
 
             <!-- ÍCONE -->
             <div class="cg-delete-group-icon">
@@ -755,9 +880,7 @@
             <!-- BOTÕES -->
             <footer class="cg-delete-group-actions">
 
-                <!-- CANCELAR -->
-                <button type="button" class="cg-btn cg-delete-group-cancel"
-                    [disabled]="isDeletingGroup"
+                <button type="button" class="cg-btn cg-delete-group-cancel" [disabled]="isDeletingGroup"
                     (click)="closeDeleteGroupConfirmation()">
 
                     Cancelar
@@ -765,9 +888,7 @@
                 </button>
 
 
-                <!-- CONFIRMAR -->
-                <button type="button" class="cg-btn cg-delete-group-confirm"
-                    [disabled]="isDeletingGroup"
+                <button type="button" class="cg-btn cg-delete-group-confirm" [disabled]="isDeletingGroup"
                     (click)="confirmDeleteGroup()">
 
                     @if (isDeletingGroup) {
@@ -781,6 +902,95 @@
 
                     <svg lucideTrash2 aria-hidden="true"></svg>
                     Confirmar exclusão
+
+                    }
+
+                </button>
+
+            </footer>
+
+        </section>
+
+    </div>
+
+    }
+
+
+    <!-- ============================================
+         MODAL DE CONFIRMAÇÃO PARA SAIR DO GRUPO
+    ============================================= -->
+
+    @if (groupToLeave) {
+
+    <div class="cg-delete-group-overlay" (click)="closeLeaveGroupConfirmation()">
+
+        <section class="cg-delete-group-dialog" role="alertdialog" aria-modal="true"
+            aria-labelledby="cg-leave-group-title" (click)="$event.stopPropagation()">
+
+            <!-- ÍCONE -->
+            <div class="cg-delete-group-icon">
+                <svg lucideLogOut aria-hidden="true"></svg>
+            </div>
+
+
+            <!-- MENSAGEM -->
+            <div class="cg-delete-group-content">
+
+                <span class="cg-eyebrow">
+                    CONFIRMAÇÃO
+                </span>
+
+                <h2 id="cg-leave-group-title">
+                    Sair do grupo?
+                </h2>
+
+                <p>
+                    Tem certeza de que deseja sair do grupo
+                    <strong>{{ groupToLeave.name }}</strong>?
+                </p>
+
+                <span class="cg-delete-group-warning">
+                    Você deixará de ter acesso às publicações e atividades deste grupo.
+                </span>
+
+            </div>
+
+
+            <!-- ERRO -->
+            @if (leaveGroupError) {
+
+            <div class="cg-delete-group-error" role="alert">
+                {{ leaveGroupError }}
+            </div>
+
+            }
+
+
+            <!-- AÇÕES -->
+            <footer class="cg-delete-group-actions">
+
+                <button type="button" class="cg-btn cg-delete-group-cancel" [disabled]="isLeavingGroup"
+                    (click)="closeLeaveGroupConfirmation()">
+
+                    Cancelar
+
+                </button>
+
+
+                <button type="button" class="cg-btn cg-delete-group-confirm" [disabled]="isLeavingGroup"
+                    (click)="confirmLeaveGroup()">
+
+                    @if (isLeavingGroup) {
+
+                    <span class="cg-create-group-spinner"></span>
+                    Saindo...
+
+                    }
+
+                    @else {
+
+                    <svg lucideLogOut aria-hidden="true"></svg>
+                    Sair do grupo
 
                     }
 
