@@ -17,14 +17,15 @@ import {
     forkJoin,
     take,
     timeout,
-    catchError
+    switchMap,
+    throwError
 } from 'rxjs';
 
 import { CINEGROUP_ICONS } from '../../icons/icons';
-
 import { UserService } from '../../services/user';
 import { GroupService } from '../../services/group';
 import { MoviePostService } from '../../services/moviepost';
+
 import type {
     User,
     Group,
@@ -50,11 +51,11 @@ export class Groups implements OnInit {
 
     private userService = inject(UserService);
     private groupService = inject(GroupService);
-
     private router = inject(Router);
     private cdr = inject(ChangeDetectorRef);
     private ngZone = inject(NgZone);
     private moviePostService = inject(MoviePostService);
+
 
     // =====================================================
     // DADOS DO USUÁRIO E DOS GRUPOS
@@ -64,7 +65,9 @@ export class Groups implements OnInit {
 
     // Signal responsável pela atualização automática dos grupos
     groups = signal<Group[]>([]);
+
     lastPostDates = signal<Record<string, string>>({});
+
     loading = true;
     errorMessage = '';
 
@@ -80,6 +83,18 @@ export class Groups implements OnInit {
 
     isCreatingGroup = false;
     createGroupError = '';
+
+
+    // =====================================================
+    // ENTRAR EM UM GRUPO
+    // =====================================================
+
+    isJoinGroupModalOpen = false;
+
+    inviteCodeInput = '';
+
+    isJoiningGroup = false;
+    joinGroupError = '';
 
 
     // =====================================================
@@ -137,7 +152,6 @@ export class Groups implements OnInit {
         this.loading = true;
         this.errorMessage = '';
 
-
         forkJoin({
 
             user: this.userService.getUserById(userId).pipe(
@@ -146,11 +160,12 @@ export class Groups implements OnInit {
 
             groups: this.groupService.getGroupsByUser(userId).pipe(
                 take(1)
-
             ),
+
             posts: this.moviePostService.getMoviePosts().pipe(
                 take(1)
             )
+
         }).pipe(
 
             timeout({ first: 10000 }),
@@ -173,7 +188,7 @@ export class Groups implements OnInit {
                         movieList: data.user.movieList ?? []
                     };
 
-                    // Atualiza o Signal
+                    // Atualiza o Signal dos grupos
                     this.groups.set(data.groups ?? []);
 
                     console.log(
@@ -184,6 +199,7 @@ export class Groups implements OnInit {
                     this.cdr.detectChanges();
 
                 });
+
                 // Calcula a data da publicação mais recente de cada grupo
                 const latestPostDates: Record<string, string> = {};
 
@@ -197,15 +213,19 @@ export class Groups implements OnInit {
 
                     if (
                         !currentDate ||
-                        new Date(post.postedAt).getTime() > new Date(currentDate).getTime()
+                        new Date(post.postedAt).getTime() >
+                        new Date(currentDate).getTime()
                     ) {
+
                         latestPostDates[post.groupId] = post.postedAt;
+
                     }
 
                 });
 
-                // Atualiza o Signal
+                // Atualiza o Signal das datas
                 this.lastPostDates.set(latestPostDates);
+
             },
 
             error: error => {
@@ -224,12 +244,11 @@ export class Groups implements OnInit {
 
         });
 
-
     }
 
 
     // =====================================================
-    // ABRIR E FECHAR MODAL
+    // ABRIR E FECHAR MODAL DE CRIAÇÃO
     // =====================================================
 
     openCreateGroupModal(): void {
@@ -262,7 +281,7 @@ export class Groups implements OnInit {
 
 
     // =====================================================
-    // CAMPOS DO FORMULÁRIO
+    // CAMPOS DO FORMULÁRIO DE CRIAÇÃO
     // =====================================================
 
     onGroupNameInput(event: Event): void {
@@ -304,7 +323,6 @@ export class Groups implements OnInit {
         const name = this.newGroupName.trim();
         const description = this.newGroupDescription.trim();
 
-
         // Validação do nome
         if (name.length < 3) {
 
@@ -324,7 +342,6 @@ export class Groups implements OnInit {
 
         }
 
-
         // Prepara os dados do grupo
         const newGroup: Omit<Group, 'id'> = {
 
@@ -341,7 +358,6 @@ export class Groups implements OnInit {
 
         };
 
-
         this.isCreatingGroup = true;
         this.createGroupError = '';
 
@@ -349,7 +365,6 @@ export class Groups implements OnInit {
             '[Groups] Criando grupo:',
             newGroup
         );
-
 
         // Salva no JSON Server
         this.groupService.createGroup(newGroup).pipe(
@@ -423,6 +438,280 @@ export class Groups implements OnInit {
 
 
     // =====================================================
+    // ABRIR E FECHAR MODAL DE ENTRADA
+    // =====================================================
+
+    openJoinGroupModal(): void {
+
+        this.inviteCodeInput = '';
+        this.joinGroupError = '';
+
+        this.isJoinGroupModalOpen = true;
+
+        this.cdr.detectChanges();
+
+    }
+
+
+    closeJoinGroupModal(): void {
+
+        // Impede fechar durante a entrada no grupo
+        if (this.isJoiningGroup) {
+            return;
+        }
+
+        this.isJoinGroupModalOpen = false;
+
+        this.inviteCodeInput = '';
+        this.joinGroupError = '';
+
+    }
+
+
+    // =====================================================
+    // NORMALIZAÇÃO DO CÓDIGO DE CONVITE
+    // =====================================================
+
+    private normalizeInviteCode(code: string): string {
+
+        return code
+            .toUpperCase()
+            .replace(/[^A-Z0-9]/g, '');
+
+    }
+
+
+    // =====================================================
+    // CAMPO DO CÓDIGO DE CONVITE
+    // =====================================================
+
+    onInviteCodeInput(event: Event): void {
+
+        const input = event.target as HTMLInputElement;
+
+        // Remove caracteres inválidos e limita a 10 caracteres
+        const normalized = this.normalizeInviteCode(input.value)
+            .slice(0, 10);
+
+        // Formata no padrão XXXXX-XXXXX
+        this.inviteCodeInput = normalized.length > 5
+            ? `${normalized.slice(0, 5)}-${normalized.slice(5)}`
+            : normalized;
+
+        this.joinGroupError = '';
+
+    }
+
+
+    // =====================================================
+    // ENTRAR EM UM GRUPO PELO CÓDIGO
+    // =====================================================
+
+    submitJoinGroup(event: Event): void {
+
+        event.preventDefault();
+
+        const user = this.currentUser;
+
+        if (!user || this.isJoiningGroup) {
+            return;
+        }
+
+        const inviteCode = this.normalizeInviteCode(
+            this.inviteCodeInput
+        );
+
+        // Valida o tamanho do código
+        if (inviteCode.length !== 10) {
+
+            this.joinGroupError =
+                'Digite um código de convite válido.';
+
+            return;
+
+        }
+
+        this.isJoiningGroup = true;
+        this.joinGroupError = '';
+
+        console.log(
+            '[Groups] Procurando grupo pelo código:',
+            inviteCode
+        );
+
+        /*
+         * Busca todos os grupos cadastrados.
+         *
+         * Não podemos usar getGroupsByUser() aqui,
+         * pois precisamos encontrar grupos dos quais
+         * o usuário ainda não participa.
+         */
+
+        this.groupService.getGroups().pipe(
+
+            take(1),
+
+            switchMap(allGroups => {
+
+                // Procura o grupo pelo código de convite
+                const foundGroup = allGroups.find(group => {
+
+                    if (!group.inviteCode) {
+                        return false;
+                    }
+
+                    return this.normalizeInviteCode(group.inviteCode) === inviteCode;
+
+                });
+
+                // Código não encontrado
+                if (!foundGroup) {
+
+                    return throwError(
+                        () => new Error('INVITE_CODE_NOT_FOUND')
+                    );
+
+                }
+
+                const currentMembers = foundGroup.memberUserIds ?? [];
+
+                // Impede o usuário de entrar duas vezes
+                if (
+                    foundGroup.createdByUserId === user.id ||
+                    currentMembers.includes(user.id)
+                ) {
+
+                    return throwError(
+                        () => new Error('ALREADY_MEMBER')
+                    );
+
+                }
+
+                // Adiciona o usuário à lista de membros
+                const updatedMemberIds = [
+                    ...new Set([
+                        ...currentMembers,
+                        user.id
+                    ])
+                ];
+
+                console.log(
+                    '[Groups] Entrando no grupo:',
+                    foundGroup.name
+                );
+
+                // Atualiza o grupo no JSON Server
+                return this.groupService.updateGroup(
+                    foundGroup.id,
+                    {
+                        memberUserIds: updatedMemberIds
+                    }
+                );
+
+            }),
+
+            take(1),
+
+            finalize(() => {
+
+                this.ngZone.run(() => {
+
+                    this.isJoiningGroup = false;
+
+                    this.cdr.detectChanges();
+
+                });
+
+            })
+
+        ).subscribe({
+
+            // Entrada realizada com sucesso
+            next: joinedGroup => {
+
+                this.ngZone.run(() => {
+
+                    console.log(
+                        '[Groups] Entrada realizada:',
+                        joinedGroup
+                    );
+
+                    // Atualiza a lista de grupos usando o Signal
+                    this.groups.update(currentGroups => {
+
+                        const alreadyExists = currentGroups.some(
+                            group => group.id === joinedGroup.id
+                        );
+
+                        if (alreadyExists) {
+
+                            return currentGroups.map(group =>
+                                group.id === joinedGroup.id
+                                    ? joinedGroup
+                                    : group
+                            );
+
+                        }
+
+                        return [
+                            ...currentGroups,
+                            joinedGroup
+                        ];
+
+                    });
+
+                    // Fecha o modal
+                    this.isJoinGroupModalOpen = false;
+
+                    // Limpa os campos
+                    this.inviteCodeInput = '';
+                    this.joinGroupError = '';
+
+                    this.cdr.detectChanges();
+
+                });
+
+            },
+
+            // Tratamento dos erros
+            error: error => {
+
+                console.error(
+                    '[Groups] Erro ao entrar no grupo:',
+                    error
+                );
+
+                this.ngZone.run(() => {
+
+                    if (error?.message === 'INVITE_CODE_NOT_FOUND') {
+
+                        this.joinGroupError =
+                            'Código não encontrado. Verifique e tente novamente.';
+
+                    } else if (error?.message === 'ALREADY_MEMBER') {
+
+                        this.joinGroupError =
+                            'Você já participa deste grupo.';
+
+                    } else {
+
+                        this.joinGroupError =
+                            'Não foi possível entrar no grupo. Verifique sua conexão e tente novamente.';
+
+                    }
+
+                    this.cdr.detectChanges();
+
+                });
+
+            }
+
+        });
+
+    }
+
+
+    // =====================================================
     // INFORMAÇÕES DA PÁGINA
     // =====================================================
 
@@ -463,6 +752,8 @@ export class Groups implements OnInit {
             .toUpperCase();
 
     }
+
+
     // =====================================================
     // AÇÕES DOS GRUPOS
     // =====================================================
@@ -470,10 +761,21 @@ export class Groups implements OnInit {
     groupToDelete: Group | null = null;
 
     isDeletingGroup = false;
+
     deleteGroupError = '';
+
+
     isGroupOwner(group: Group): boolean {
+
         return group.createdByUserId === this.currentUser?.id;
+
     }
+
+
+    // =====================================================
+    // ABRIR CONFIRMAÇÃO DE EXCLUSÃO
+    // =====================================================
+
     openDeleteGroupConfirmation(group: Group): void {
 
         if (!this.isGroupOwner(group)) {
@@ -481,9 +783,16 @@ export class Groups implements OnInit {
         }
 
         this.groupToDelete = group;
+
         this.deleteGroupError = '';
 
     }
+
+
+    // =====================================================
+    // FECHAR CONFIRMAÇÃO DE EXCLUSÃO
+    // =====================================================
+
     closeDeleteGroupConfirmation(): void {
 
         if (this.isDeletingGroup) {
@@ -491,9 +800,16 @@ export class Groups implements OnInit {
         }
 
         this.groupToDelete = null;
+
         this.deleteGroupError = '';
 
     }
+
+
+    // =====================================================
+    // EXCLUIR GRUPO
+    // =====================================================
+
     confirmDeleteGroup(): void {
 
         const group = this.groupToDelete;
@@ -519,6 +835,7 @@ export class Groups implements OnInit {
                 this.ngZone.run(() => {
 
                     this.isDeletingGroup = false;
+
                     this.cdr.detectChanges();
 
                 });
@@ -545,6 +862,7 @@ export class Groups implements OnInit {
 
                     // Fecha a confirmação
                     this.groupToDelete = null;
+
                     this.deleteGroupError = '';
 
                     this.cdr.detectChanges();
@@ -574,4 +892,5 @@ export class Groups implements OnInit {
         });
 
     }
+
 }
