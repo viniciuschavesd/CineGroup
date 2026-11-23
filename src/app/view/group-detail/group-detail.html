@@ -119,98 +119,7 @@
 
         </section>
 
-        <!-- ================================================
-     CÓDIGO DE CONVITE
-================================================= -->
 
-        @if (isGroupOwner()) {
-
-        <section class="cg-group-invite">
-
-            <div class="cg-group-invite__info">
-
-                <div class="cg-group-invite__icon">
-                    <svg lucideTicket aria-hidden="true"></svg>
-                </div>
-
-                <div>
-
-                    <span class="cg-eyebrow">
-                        CONVITE DO GRUPO
-                    </span>
-
-                    <h2>
-                        Convide pessoas para o grupo
-                    </h2>
-
-                    <p>
-                        Compartilhe este código com seus amigos para que eles possam participar do grupo.
-                    </p>
-
-                </div>
-
-            </div>
-
-            <div class="cg-group-invite__code-area">
-
-                <div class="cg-group-invite__code">
-
-                    <span>
-                        CÓDIGO DE CONVITE
-                    </span>
-
-                    @if (currentGroup.inviteCode) {
-
-                    <strong>
-                        {{ currentGroup.inviteCode }}
-                    </strong>
-
-                    }
-
-                    @else {
-
-                    <strong class="cg-group-invite__generating">
-                        Gerando código...
-                    </strong>
-
-                    }
-
-                </div>
-
-
-                <button type="button" class="cg-group-invite__copy" [disabled]="!currentGroup.inviteCode"
-                    (click)="copyInviteCode()">
-
-                    @if (inviteCodeCopied) {
-
-                    <svg lucideCheck aria-hidden="true"></svg>
-                    Copiado!
-
-                    }
-
-                    @else {
-
-                    <svg lucideCopy aria-hidden="true"></svg>
-                    Copiar código
-
-                    }
-
-                </button>
-
-            </div>
-
-
-            @if (inviteCodeError) {
-
-            <div class="cg-group-invite__error" role="alert">
-                {{ inviteCodeError }}
-            </div>
-
-            }
-
-        </section>
-
-        }
 
 
         <!-- DUAS COLUNAS -->
@@ -384,93 +293,169 @@
                      LATERAL DE MEMBROS
                 ===================================== -->
 
-            <aside class="cg-group-members">
+            <aside class="cg-group-detail-sidebar">
+                <!-- CARD DE CONVITE-->
 
-                <div class="cg-group-members-heading">
 
-                    <div>
-                        <h2>Membros</h2>
-                        <p>Participantes do grupo.</p>
+                <section class="cg-group-invite">
+
+                    <div class="cg-group-invite__header">
+
+                        <div class="cg-group-invite__icon">
+                            <svg lucideTicket aria-hidden="true"></svg>
+                        </div>
+
+                        <div>
+                            <h3>Convide amigos</h3>
+                            <p>Traga novas pessoas para o grupo.</p>
+                        </div>
+
                     </div>
 
-                    <span>
-                        {{ members().length }}
-                    </span>
 
-                </div>
+                    <!-- CÓDIGO -->
+                    <div class="cg-group-invite__code">
 
+                        <span>CÓDIGO DO GRUPO</span>
 
-                <div class="cg-group-member-list">
+                        @if (currentGroup.inviteCode) {
 
-                    @for (member of members(); track member.id) {
-
-                    <article class="cg-group-member">
-
-                        <div class="cg-group-member-avatar">
-
-                            @if (member.avatarUrl) {
-
-                            <img [src]="member.avatarUrl" [alt]="member.name" />
-
-                            }
-
-                            @else {
-
-                            {{ getUserInitials(member) }}
-
-                            }
-
-                        </div>
-
-                        <div class="cg-group-member-info">
-
-                            <strong>
-                                {{ member.name }}
-                            </strong>
-
-                            <span>
-                                @{{ member.user }}
-                            </span>
-
-                            @if (member.id === currentGroup.createdByUserId) {
-
-                            <small class="cg-group-owner-label">
-                                <svg lucideCrown aria-hidden="true"></svg>
-                                Dono do grupo
-                            </small>
-
-                            }
-
-                            @else if (member.id === currentUser?.id) {
-
-                            <small>
-                                Você
-                            </small>
-
-                            }
-
-                        </div>
-
-
-                        <!-- REMOVER MEMBRO: SOMENTE DONO -->
-                        @if (canRemoveMember(member)) {
-
-                        <button type="button" class="cg-group-member-remove" [disabled]="isRemovingMember"
-                            (click)="openRemoveMemberConfirmation(member)"
-                            [title]="'Remover ' + member.name + ' do grupo'"
-                            [attr.aria-label]="'Remover ' + member.name + ' do grupo'">
-                            <svg lucideX aria-hidden="true"></svg>
-                        </button>
+                        <strong>
+                            {{ currentGroup.inviteCode }}
+                        </strong>
 
                         }
 
-                    </article>
+                        @else {
+
+                        <strong class="cg-group-invite__generating">
+                            Gerando código...
+                        </strong>
+
+                        }
+
+                    </div>
+
+
+                    <!-- COPIAR -->
+                    <button type="button" class="cg-group-invite__copy" [disabled]="!currentGroup.inviteCode"
+                        (click)="copyInviteCode()">
+
+                        @if (inviteCodeCopied) {
+
+                        <svg lucideCheck aria-hidden="true"></svg>
+                        Copiado!
+
+                        }
+
+                        @else {
+
+                        <svg lucideCopy aria-hidden="true"></svg>
+                        Copiar código
+
+                        }
+
+                    </button>
+
+
+                    @if (inviteCodeError) {
+
+                    <p class="cg-group-invite__error" role="alert">
+                        {{ inviteCodeError }}
+                    </p>
 
                     }
 
-                </div>
+                </section>
+                <!-- CARD DE MEMBROS -->
+                <section class="cg-group-members">
+
+                    <div class="cg-group-members-heading">
+
+                        <div>
+                            <h2>Membros</h2>
+                            <p>Participantes do grupo.</p>
+                        </div>
+
+                        <span>
+                            {{ members().length }}
+                        </span>
+
+                    </div>
+
+                    <div class="cg-group-member-list">
+
+                        @for (member of members(); track member.id) {
+
+                        <article class="cg-group-member">
+
+                            <div class="cg-group-member-avatar">
+
+                                @if (member.avatarUrl) {
+
+                                <img [src]="member.avatarUrl" [alt]="member.name" />
+
+                                }
+
+                                @else {
+
+                                {{ getUserInitials(member) }}
+
+                                }
+
+                            </div>
+
+                            <div class="cg-group-member-info">
+
+                                <strong>
+                                    {{ member.name }}
+                                </strong>
+
+                                <span>
+                                    @{{ member.user }}
+                                </span>
+
+                                @if (member.id === currentGroup.createdByUserId) {
+
+                                <small class="cg-group-owner-label">
+                                    <svg lucideCrown aria-hidden="true"></svg>
+                                    Dono do grupo
+                                </small>
+
+                                }
+
+                                @else if (member.id === currentUser?.id) {
+
+                                <small>
+                                    Você
+                                </small>
+
+                                }
+
+                            </div>
+
+                            <!-- REMOVER MEMBRO: SOMENTE DONO -->
+                            @if (canRemoveMember(member)) {
+
+                            <button type="button" class="cg-group-member-remove" [disabled]="isRemovingMember"
+                                (click)="openRemoveMemberConfirmation(member)"
+                                [title]="'Remover ' + member.name + ' do grupo'"
+                                [attr.aria-label]="'Remover ' + member.name + ' do grupo'">
+                                <svg lucideX aria-hidden="true"></svg>
+                            </button>
+
+                            }
+
+                        </article>
+
+                        }
+
+                    </div>
+
+                </section>
 
             </aside>
+
 
         </div>
 

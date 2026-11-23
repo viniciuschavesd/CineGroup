@@ -180,22 +180,14 @@
       "inviteCode": "AHPXJ-K7VM3"
     },
     {
-      "name": "eqrqer",
-      "createdByUserId": "6c03d7ab-4389-4f00-8b59-ff5827d88445",
+      "name": "Amigos do Adler",
+      "createdByUserId": "d0ff4473-2ca5-4c9f-884f-4ab24ff2640b",
       "memberUserIds": [
-        "6c03d7ab-4389-4f00-8b59-ff5827d88445"
+        "d0ff4473-2ca5-4c9f-884f-4ab24ff2640b"
       ],
-      "createdAt": "2026-11-23T02:04:06.526Z",
-      "id": "f0828f17-0c80-4181-a800-612baf278d7f"
-    },
-    {
-      "name": "Amigos do Cinema",
-      "createdByUserId": "6c03d7ab-4389-4f00-8b59-ff5827d88445",
-      "memberUserIds": [
-        "6c03d7ab-4389-4f00-8b59-ff5827d88445"
-      ],
-      "createdAt": "2026-11-23T02:20:29.775Z",
-      "id": "1fbfec6f-fc86-41ab-91bc-2e792a856c50"
+      "createdAt": "2026-11-23T04:28:38.129Z",
+      "id": "422c0fb0-00ef-46ea-a77d-b51c2d3f8e55",
+      "inviteCode": "E5TUT-849CF"
     }
   ],
   "moviePosts": [

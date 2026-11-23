@@ -19,7 +19,8 @@ import {
   LucideCrown,
   LucideUserX,
   LucideSend,
-  LucideTicket
+  LucideTicket,
+  LucideCopy
 } from '@lucide/angular';
 
 export const CINEGROUP_ICONS = [
@@ -43,5 +44,6 @@ export const CINEGROUP_ICONS = [
   LucideCrown,
   LucideUserX,
   LucideSend,
-  LucideTicket
+  LucideTicket,
+  LucideCopy
 ];
