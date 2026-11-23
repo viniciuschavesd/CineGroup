@@ -3,9 +3,9 @@ import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
-import { CINEGROUP_ICONS } from '../icons/icons';
-import { UserService } from '../services/user';
-import type { RegisterUserInput } from '../models';
+import { CINEGROUP_ICONS } from '../../icons/icons';
+import { UserService } from '../../services/user';
+import type { RegisterUserInput } from '../../models';
 
 @Component({
   selector: 'app-createacc',

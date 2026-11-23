@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { CINEGROUP_ICONS } from '../icons/icons';
+import { CINEGROUP_ICONS } from '../../icons/icons';
 
 @Component({
   selector: 'app-inicio',

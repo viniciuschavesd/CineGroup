@@ -43,12 +43,12 @@
 
         <nav class="cg-dashboard-nav">
 
-            <a href="#my-list" class="cg-dashboard-nav__link is-active">
+            <a routerLink="/dashboard" class="cg-dashboard-nav__link is-active">
                 <svg lucideBookmark aria-hidden="true"></svg>
                 Minha lista
             </a>
 
-            <a href="#my-groups" class="cg-dashboard-nav__link">
+            <a routerLink="/groups" class="cg-dashboard-nav__link">
                 <svg lucideUsersRound aria-hidden="true"></svg>
                 Meus grupos
             </a>
@@ -361,11 +361,11 @@
 
                     }
 
-                    <button type="button" class="cg-dashboard-create-group" disabled>
+                    <button type="button" class="cg-dashboard-create-group" enabled>
                         + Criar novo grupo
                     </button>
 
-                    <a href="#my-groups" class="cg-dashboard-all-groups">
+                    <a routerLink="/groups" class="cg-dashboard-all-groups">
                         Ver todos os meus grupos →
                     </a>
 
@@ -386,7 +386,7 @@
                         Compartilhe uma nota e um comentário nos seus grupos.
                     </p>
 
-                    <a href="#my-groups">
+                    <a routerLink="/groups" class="cg-dashboard-all-groups">
                         Ir para meus grupos →
                     </a>
 

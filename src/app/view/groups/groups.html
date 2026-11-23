@@ -1,0 +1,677 @@
+
+<div class="cg-page cg-groups-page">
+
+    <!-- ================================================
+         CARREGAMENTO
+    ================================================= -->
+
+    @if (loading) {
+
+        <main class="cg-dashboard-state">
+
+            <div class="cg-dashboard-loader"></div>
+
+            <p>
+                Carregando seus grupos...
+            </p>
+
+        </main>
+
+    }
+
+    <!-- ================================================
+         ERRO
+    ================================================= -->
+
+    @else if (errorMessage) {
+
+        <main class="cg-dashboard-state">
+
+            <h2 class="cg-heading">
+                Ops! Algo deu errado.
+            </h2>
+
+            <p class="cg-copy">
+                {{ errorMessage }}
+            </p>
+
+            <button
+                type="button"
+                class="cg-btn cg-btn--primary"
+                (click)="loadGroups()"
+            >
+                Tentar novamente
+            </button>
+
+        </main>
+
+    }
+
+    <!-- ================================================
+         PÁGINA DE GRUPOS
+    ================================================= -->
+
+    @else if (currentUser) {
+
+        <!-- CABEÇALHO -->
+        <header class="cg-dashboard-header">
+
+            <a
+                routerLink="/dashboard"
+                class="cg-brand"
+                aria-label="CineGroup"
+            >
+                cinegroup<span class="cg-brand__dot">.</span>
+            </a>
+
+            <nav class="cg-dashboard-nav">
+
+                <a
+                    routerLink="/dashboard"
+                    routerLinkActive="is-active"
+                    [routerLinkActiveOptions]="{ exact: true }"
+                    class="cg-dashboard-nav__link"
+                >
+                    <svg lucideBookmark aria-hidden="true"></svg>
+                    Minha lista
+                </a>
+
+                <a
+                    routerLink="/groups"
+                    routerLinkActive="is-active"
+                    [routerLinkActiveOptions]="{ exact: true }"
+                    class="cg-dashboard-nav__link"
+                    ariaCurrentWhenActive="page"
+                >
+                    <svg lucideUsersRound aria-hidden="true"></svg>
+                    Meus grupos
+                </a>
+
+            </nav>
+
+            <div class="cg-dashboard-profile">
+
+                <div class="cg-dashboard-avatar">
+                    {{ userInitials }}
+                </div>
+
+                <div class="cg-dashboard-profile__info">
+
+                    <span>{{ currentUser.name }}</span>
+
+                    <small>
+                        @{{ currentUser.user }}
+                    </small>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- ============================================
+             CONTEÚDO PRINCIPAL
+        ============================================= -->
+
+        <main class="cg-groups-container">
+
+            <!-- INTRODUÇÃO -->
+            <section class="cg-groups-intro">
+
+                <div class="cg-groups-intro__info">
+
+                    <span class="cg-eyebrow">
+                        SUA COMUNIDADE
+                    </span>
+
+                    <h1 class="cg-heading">
+                        Meus grupos
+                    </h1>
+
+                    <p class="cg-copy">
+                        Reúna sua turma, compartilhe filmes e descubra novas histórias juntos.
+                    </p>
+
+                </div>
+
+
+                <!-- AÇÕES -->
+                <div class="cg-groups-intro__actions">
+
+                    <!-- Entrar em grupo -->
+                    <button
+                        type="button"
+                        class="cg-btn cg-btn--outline cg-groups-join"
+                        disabled
+                        title="Entrar em um grupo estará disponível em breve"
+                    >
+                        <span>↗</span>
+                        Entrar em grupo
+                    </button>
+
+                    <!-- Criar grupo -->
+                    <button
+                        type="button"
+                        class="cg-btn cg-btn--primary cg-groups-create"
+                        (click)="openCreateGroupModal()"
+                    >
+                        <span>+</span>
+                        Criar grupo
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- ========================================
+                 LISTA DE GRUPOS
+            ========================================= -->
+
+            @if (groups().length > 0) {
+
+                <section class="cg-groups-list">
+
+                    <div class="cg-groups-list__heading">
+
+                        <div>
+
+                            <h2>
+                                Seus grupos
+                            </h2>
+
+                            <p>
+                                Grupos dos quais você participa.
+                            </p>
+
+                        </div>
+
+                        <span>
+                            {{ totalGroups }}
+                            {{ totalGroups === 1 ? 'grupo' : 'grupos' }}
+                        </span>
+
+                    </div>
+
+
+                    <!-- GRID -->
+                    <div class="cg-groups-grid">
+
+                        @for (group of groups(); track group.id) {
+
+                            <article class="cg-group-card">
+
+                                <!-- PARTE SUPERIOR -->
+                                <div class="cg-group-card__top">
+
+                                    <div class="cg-group-card__avatar">
+                                        {{ getGroupInitials(group.name) }}
+                                    </div>
+
+                                    <span class="cg-group-card__members">
+
+                                        <svg lucideUsersRound aria-hidden="true"></svg>
+
+                                        {{ group.memberUserIds?.length ?? 0 }}
+
+                                        {{
+                                            group.memberUserIds?.length === 1
+                                                ? 'membro'
+                                                : 'membros'
+                                        }}
+
+                                    </span>
+
+                                </div>
+
+
+                                <!-- INFORMAÇÕES -->
+                                <div class="cg-group-card__info">
+
+                                    <h3>
+                                        {{ group.name }}
+                                    </h3>
+
+                                    <p>
+                                        {{
+                                            group.description ||
+                                            'Um espaço para compartilhar filmes e conversar sobre cinema.'
+                                        }}
+                                    </p>
+
+                                </div>
+
+
+                                <!-- RODAPÉ -->
+                                <div class="cg-group-card__footer">
+
+                                    <span>
+                                        Criado em
+                                        {{ group.createdAt | date:'dd/MM/yyyy' }}
+                                    </span>
+
+                                </div>
+
+
+                                <!-- =================================
+                                     AÇÕES DO GRUPO
+                                ================================== -->
+
+                                <div class="cg-group-card__actions">
+
+                                    <!-- AÇÕES EXCLUSIVAS DO DONO -->
+                                    @if (isGroupOwner(group)) {
+
+                                        <!-- EDITAR -->
+                                        <button
+                                            type="button"
+                                            class="cg-group-action cg-group-action--edit"
+                                            disabled
+                                            title="Editar detalhes estará disponível em breve"
+                                            aria-label="Editar detalhes do grupo"
+                                        >
+                                            <svg lucidePencil aria-hidden="true"></svg>
+                                            <span>Editar</span>
+                                        </button>
+
+                                        <!-- EXCLUIR -->
+                                        <button
+                                            type="button"
+                                            class="cg-group-action cg-group-action--delete"
+                                            [disabled]="isDeletingGroup"
+                                            (click)="openDeleteGroupConfirmation(group)"
+                                            title="Excluir grupo"
+                                            aria-label="Excluir grupo"
+                                        >
+                                            <svg lucideTrash aria-hidden="true"></svg>
+                                            <span>Excluir</span>
+                                        </button>
+
+                                    }
+
+
+                                    <!-- SAIR DO GRUPO -->
+                                    <button
+                                        type="button"
+                                        class="cg-group-action cg-group-action--leave"
+                                        disabled
+                                        title="Sair do grupo estará disponível em breve"
+                                        aria-label="Sair do grupo"
+                                    >
+                                        <svg lucideLogOut aria-hidden="true"></svg>
+                                        <span>Sair</span>
+                                    </button>
+
+                                </div>
+
+                            </article>
+
+                        }
+
+                    </div>
+
+                </section>
+
+            }
+
+
+            <!-- ========================================
+                 ESTADO VAZIO
+            ========================================= -->
+
+            @else {
+
+                <section class="cg-groups-empty">
+
+                    <div class="cg-groups-empty__icon">
+                        <svg lucideUsersRound aria-hidden="true"></svg>
+                    </div>
+
+                    <h2 class="cg-heading">
+                        Sua turma começa aqui.
+                    </h2>
+
+                    <p class="cg-copy">
+                        Você ainda não participa de nenhum grupo.
+                        Reúna seus amigos e comece a compartilhar suas experiências cinematográficas.
+                    </p>
+
+                    <span class="cg-groups-empty__hint">
+                        Crie seu primeiro grupo ou aceite um convite para participar.
+                    </span>
+
+                    <button
+                        type="button"
+                        class="cg-btn cg-btn--primary"
+                        (click)="openCreateGroupModal()"
+                    >
+                        <span>+</span>
+                        Criar primeiro grupo
+                    </button>
+
+                </section>
+
+            }
+
+        </main>
+
+
+        <!-- ============================================
+             RODAPÉ
+        ============================================= -->
+
+        <footer class="cg-dashboard-footer">
+
+            <span>
+                CineGroup — o filme termina, a conversa continua.
+            </span>
+
+            <span>
+                Precisa de ajuda?
+            </span>
+
+        </footer>
+
+
+        <!-- ============================================
+             MODAL DE CRIAÇÃO DE GRUPO
+        ============================================= -->
+
+        @if (isCreateGroupModalOpen) {
+
+            <div
+                class="cg-create-group-overlay"
+                (click)="closeCreateGroupModal()"
+            >
+
+                <section
+                    class="cg-create-group-dialog"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="cg-create-group-title"
+                    (click)="$event.stopPropagation()"
+                >
+
+                    <!-- CABEÇALHO DO MODAL -->
+                    <header class="cg-create-group-header">
+
+                        <div>
+
+                            <span class="cg-eyebrow">
+                                SUA COMUNIDADE
+                            </span>
+
+                            <h2 id="cg-create-group-title">
+                                Criar novo grupo
+                            </h2>
+
+                            <p>
+                                Reúna seus amigos e compartilhe suas experiências cinematográficas.
+                            </p>
+
+                        </div>
+
+                        <button
+                            type="button"
+                            class="cg-create-group-close"
+                            aria-label="Fechar"
+                            [disabled]="isCreatingGroup"
+                            (click)="closeCreateGroupModal()"
+                        >
+                            <svg lucideX aria-hidden="true"></svg>
+                        </button>
+
+                    </header>
+
+
+                    <!-- FORMULÁRIO -->
+                    <form
+                        class="cg-create-group-form"
+                        (submit)="submitCreateGroup($event)"
+                    >
+
+                        <!-- NOME -->
+                        <div class="cg-create-group-field">
+
+                            <label for="cg-group-name">
+
+                                Nome do grupo
+
+                                <span>*</span>
+
+                            </label>
+
+                            <input
+                                id="cg-group-name"
+                                type="text"
+                                placeholder="Ex.: Amigos do Cinema"
+                                [value]="newGroupName"
+                                (input)="onGroupNameInput($event)"
+                                maxlength="40"
+                                minlength="3"
+                                required
+                                autocomplete="off"
+                                [disabled]="isCreatingGroup"
+                            />
+
+                            <small>
+                                Escolha um nome para identificar seu grupo.
+                            </small>
+
+                        </div>
+
+
+                        <!-- DESCRIÇÃO -->
+                        <div class="cg-create-group-field">
+
+                            <label for="cg-group-description">
+
+                                Descrição
+
+                                <span class="cg-create-group-optional">
+                                    Opcional
+                                </span>
+
+                            </label>
+
+                            <textarea
+                                id="cg-group-description"
+                                placeholder="Conte um pouco sobre seu grupo..."
+                                [value]="newGroupDescription"
+                                (input)="onGroupDescriptionInput($event)"
+                                maxlength="160"
+                                rows="4"
+                                [disabled]="isCreatingGroup"
+                            ></textarea>
+
+                            <small>
+                                {{ newGroupDescription.length }}/160 caracteres
+                            </small>
+
+                        </div>
+
+
+                        <!-- INFORMAÇÃO -->
+                        <div class="cg-create-group-info">
+
+                            <svg lucideUsersRound aria-hidden="true"></svg>
+
+                            <p>
+                                Você será automaticamente adicionado como o primeiro membro do grupo.
+                            </p>
+
+                        </div>
+
+
+                        <!-- ERRO -->
+                        @if (createGroupError) {
+
+                            <div
+                                class="cg-create-group-error"
+                                role="alert"
+                            >
+                                {{ createGroupError }}
+                            </div>
+
+                        }
+
+
+                        <!-- AÇÕES -->
+                        <footer class="cg-create-group-actions">
+
+                            <button
+                                type="button"
+                                class="cg-btn cg-create-group-cancel"
+                                [disabled]="isCreatingGroup"
+                                (click)="closeCreateGroupModal()"
+                            >
+                                Cancelar
+                            </button>
+
+                            <button
+                                type="submit"
+                                class="cg-btn cg-btn--primary"
+                                [disabled]="
+                                    isCreatingGroup ||
+                                    newGroupName.trim().length < 3
+                                "
+                            >
+
+                                @if (isCreatingGroup) {
+
+                                    <span class="cg-create-group-spinner"></span>
+                                    Criando...
+
+                                }
+
+                                @else {
+
+                                    <span>+</span>
+                                    Criar grupo
+
+                                }
+
+                            </button>
+
+                        </footer>
+
+                    </form>
+
+                </section>
+
+            </div>
+
+        }
+
+
+        <!-- ============================================
+             MODAL DE CONFIRMAÇÃO DE EXCLUSÃO
+        ============================================= -->
+
+        @if (groupToDelete) {
+
+            <div
+                class="cg-delete-group-overlay"
+                (click)="closeDeleteGroupConfirmation()"
+            >
+
+                <section
+                    class="cg-delete-group-dialog"
+                    role="alertdialog"
+                    aria-modal="true"
+                    aria-labelledby="cg-delete-group-title"
+                    (click)="$event.stopPropagation()"
+                >
+
+                    <!-- ÍCONE -->
+                    <div class="cg-delete-group-icon">
+                        <svg lucideTrash2 aria-hidden="true"></svg>
+                    </div>
+
+
+                    <!-- MENSAGEM -->
+                    <div class="cg-delete-group-content">
+
+                        <span class="cg-eyebrow">
+                            ATENÇÃO
+                        </span>
+
+                        <h2 id="cg-delete-group-title">
+                            Excluir grupo?
+                        </h2>
+
+                        <p>
+                            Tem certeza de que deseja excluir o grupo
+                            <strong>{{ groupToDelete.name }}</strong>?
+                        </p>
+
+                        <span class="cg-delete-group-warning">
+                            Essa ação não poderá ser desfeita.
+                        </span>
+
+                    </div>
+
+
+                    <!-- ERRO -->
+                    @if (deleteGroupError) {
+
+                        <div
+                            class="cg-delete-group-error"
+                            role="alert"
+                        >
+                            {{ deleteGroupError }}
+                        </div>
+
+                    }
+
+
+                    <!-- BOTÕES -->
+                    <footer class="cg-delete-group-actions">
+
+                        <!-- CANCELAR -->
+                        <button
+                            type="button"
+                            class="cg-btn cg-delete-group-cancel"
+                            [disabled]="isDeletingGroup"
+                            (click)="closeDeleteGroupConfirmation()"
+                        >
+                            Cancelar
+                        </button>
+
+
+                        <!-- CONFIRMAR -->
+                        <button
+                            type="button"
+                            class="cg-btn cg-delete-group-confirm"
+                            [disabled]="isDeletingGroup"
+                            (click)="confirmDeleteGroup()"
+                        >
+
+                            @if (isDeletingGroup) {
+
+                                <span class="cg-create-group-spinner"></span>
+                                Excluindo...
+
+                            }
+
+                            @else {
+
+                                <svg lucideTrash2 aria-hidden="true"></svg>
+                                Confirmar exclusão
+
+                            }
+
+                        </button>
+
+                    </footer>
+
+                </section>
+
+            </div>
+
+        }
+
+    }
+
+</div>

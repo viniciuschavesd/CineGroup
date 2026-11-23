@@ -29,13 +29,13 @@ import {
     Subject
 } from 'rxjs';
 
-import { CINEGROUP_ICONS } from '../icons/icons';
+import { CINEGROUP_ICONS } from '../../icons/icons';
 
-import { UserService } from '../services/user';
-import { MovieService } from '../services/movie';
-import { GroupService } from '../services/group';
-import { MoviePostService } from '../services/moviepost';
-import { TmdbService } from '../services/tmdb';
+import { UserService } from '../../services/user';
+import { MovieService } from '../../services/movie';
+import { GroupService } from '../../services/group';
+import { MoviePostService } from '../../services/moviepost';
+import { TmdbService } from '../../services/tmdb';
 
 import type {
     User,
@@ -43,12 +43,12 @@ import type {
     Movie,
     Group,
     MovieListStatus
-} from '../models';
+} from '../../models';
 
 import type {
     TmdbMovie,
     TmdbMovieDetails
-} from '../models/tmdb.model';
+} from '../../models/tmdb.model';
 
 type MovieFilter = 'all' | MovieListStatus;
 

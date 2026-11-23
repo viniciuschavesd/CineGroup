@@ -58,13 +58,7 @@
       "email": "adler",
       "password": "123456789",
       "createdAt": "2026-11-23T00:44:12.584Z",
-      "movieList": [
-        {
-          "movieId": "876a8953-73f3-4571-92eb-d16f7b5ccdcf",
-          "status": "want-to-watch",
-          "addedAt": "2026-11-23T01:14:37.798Z"
-        }
-      ]
+      "movieList": []
     }
   ],
   "movies": [
@@ -173,6 +167,36 @@
       "id": "876a8953-73f3-4571-92eb-d16f7b5ccdcf"
     }
   ],
-  "groups": [],
+  "groups": [
+    {
+      "name": "asdasd",
+      "description": "asdasd",
+      "createdByUserId": "6c03d7ab-4389-4f00-8b59-ff5827d88445",
+      "memberUserIds": [
+        "6c03d7ab-4389-4f00-8b59-ff5827d88445"
+      ],
+      "createdAt": "2026-11-23T01:56:58.769Z",
+      "id": "b0c0ca9f-8aad-40f8-b396-006fcdcc793a"
+    },
+    {
+      "name": "asdas",
+      "description": "asa",
+      "createdByUserId": "6c03d7ab-4389-4f00-8b59-ff5827d88445",
+      "memberUserIds": [
+        "6c03d7ab-4389-4f00-8b59-ff5827d88445"
+      ],
+      "createdAt": "2026-11-23T01:57:29.009Z",
+      "id": "2d7fcbd2-91d0-491f-b873-2ace10c031b4"
+    },
+    {
+      "name": "eqrqer",
+      "createdByUserId": "6c03d7ab-4389-4f00-8b59-ff5827d88445",
+      "memberUserIds": [
+        "6c03d7ab-4389-4f00-8b59-ff5827d88445"
+      ],
+      "createdAt": "2026-11-23T02:04:06.526Z",
+      "id": "f0828f17-0c80-4181-a800-612baf278d7f"
+    }
+  ],
   "moviePosts": []
 }
