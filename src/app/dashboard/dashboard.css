@@ -1274,3 +1274,124 @@
   outline: 2px solid #ef4444;
   outline-offset: 3px;
 }
+
+/* =====================================================
+   AÇÕES DOS FILMES
+===================================================== */
+
+.cg-dashboard-movie__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+/* Botão de status */
+
+.cg-dashboard-status {
+    min-width: 0;
+    width: fit-content;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+
+    padding: 0.5rem 0.75rem;
+
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+
+    transition: all var(--cg-transition-fast);
+}
+
+.cg-dashboard-status svg {
+    width: 0.9rem;
+    height: 0.9rem;
+}
+
+.cg-dashboard-status__circle {
+    width: 0.75rem;
+    height: 0.75rem;
+    flex-shrink: 0;
+}
+
+/* Botão remover */
+
+.cg-dashboard-remove {
+    display: grid;
+    place-items: center;
+
+    width: 2.15rem;
+    height: 2.15rem;
+    flex-shrink: 0;
+
+    color: var(--cg-color-text-muted);
+    background: transparent;
+
+    border: 1px solid var(--cg-color-border);
+    border-radius: var(--cg-radius-md);
+
+    cursor: pointer;
+
+    transition:
+        color 180ms ease,
+        background 180ms ease,
+        border-color 180ms ease;
+}
+
+.cg-dashboard-remove svg {
+    width: 1rem;
+    height: 1rem;
+    stroke-width: 2;
+}
+
+.cg-dashboard-remove:hover:not(:disabled) {
+    color: #ef4444;
+    background: rgb(239 68 68 / 10%);
+    border-color: rgb(239 68 68 / 35%);
+}
+
+.cg-dashboard-remove:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.cg-dashboard-remove:focus-visible {
+    outline: 2px solid #ef4444;
+    outline-offset: 3px;
+}
+
+/* Mensagem de erro das ações */
+
+.cg-dashboard-action-error {
+    margin: 0 0 1rem;
+    padding: 0.7rem 0.9rem;
+
+    color: #ef4444;
+    background: rgb(239 68 68 / 8%);
+
+    border: 1px solid rgb(239 68 68 / 20%);
+    border-radius: var(--cg-radius-md);
+
+    font-size: 0.78rem;
+}
+
+/* Responsividade */
+
+@media (max-width: 520px) {
+
+    .cg-dashboard-movie__actions {
+        grid-column: 3;
+        justify-self: start;
+        margin-top: 0.25rem;
+    }
+
+    .cg-dashboard-status {
+        grid-column: auto;
+        margin-top: 0;
+    }
+
+}

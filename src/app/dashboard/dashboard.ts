@@ -77,16 +77,16 @@ interface DashboardGroup extends Group {
 })
 export class Dashboard implements OnInit {
 
-private userService = inject(UserService);
-private movieService = inject(MovieService);
-private groupService = inject(GroupService);
-private moviePostService = inject(MoviePostService);
-private router = inject(Router);
-private cdr = inject(ChangeDetectorRef);
-private tmdbService = inject(TmdbService);
-private destroyRef = inject(DestroyRef);
-private movieSearchSubject = new Subject<string>();
-private ngZone = inject(NgZone);
+    private userService = inject(UserService);
+    private movieService = inject(MovieService);
+    private groupService = inject(GroupService);
+    private moviePostService = inject(MoviePostService);
+    private router = inject(Router);
+    private cdr = inject(ChangeDetectorRef);
+    private tmdbService = inject(TmdbService);
+    private destroyRef = inject(DestroyRef);
+    private movieSearchSubject = new Subject<string>();
+    private ngZone = inject(NgZone);
 
 
     currentUser: User | null = null;
@@ -99,6 +99,7 @@ private ngZone = inject(NgZone);
     loading = true;
     errorMessage = '';
     updatingMovieId: string | null = null;
+    movieActionError = signal('');
 
     // Pesquisa de filmes
     isMovieSearchOpen = false;
@@ -385,76 +386,165 @@ private ngZone = inject(NgZone);
     }
 
 
-// Adiciona diretamente um resultado da pesquisa
-addTmdbMovieToList(movie: TmdbMovie): void {
+    // Adiciona diretamente um resultado da pesquisa
+    addTmdbMovieToList(movie: TmdbMovie): void {
 
-    if (
-        !this.currentUser ||
-        this.isSavingMovie ||
-        this.addingTmdbMovieId !== null
-    ) {
-        return;
-    }
-
-    if (this.isTmdbMovieInList(movie)) {
-        return;
-    }
-
-    this.addingTmdbMovieId = movie.id;
-    this.movieSearchError.set('');
-
-    this.tmdbService.getMovieDetails(movie.id).pipe(
-
-        take(1),
-
-        finalize(() => {
-
-            this.ngZone.run(() => {
-                this.addingTmdbMovieId = null;
-                this.cdr.detectChanges();
-            });
-
-        })
-
-    ).subscribe({
-
-        next: details => {
-
-            this.ngZone.run(() => {
-
-                this.selectedTmdbMovie = movie;
-                this.selectedMovieDetails = details;
-
-                // Reutiliza o cadastro já implementado.
-                this.addSelectedMovieToList();
-
-                this.cdr.detectChanges();
-
-            });
-
-        },
-
-        error: error => {
-
-            console.error(
-                '[TMDB] Erro ao carregar filme para adicionar:',
-                error
-            );
-
-            this.ngZone.run(() => {
-
-                this.movieSearchError.set(
-                    'Não foi possível carregar os detalhes do filme.'
-                );
-
-                this.cdr.detectChanges();
-
-            });
-
+        if (
+            !this.currentUser ||
+            this.isSavingMovie ||
+            this.addingTmdbMovieId !== null
+        ) {
+            return;
         }
 
-    });
-}
+        if (this.isTmdbMovieInList(movie)) {
+            return;
+        }
+
+        this.addingTmdbMovieId = movie.id;
+        this.movieSearchError.set('');
+
+        this.tmdbService.getMovieDetails(movie.id).pipe(
+
+            take(1),
+
+            finalize(() => {
+
+                this.ngZone.run(() => {
+                    this.addingTmdbMovieId = null;
+                    this.cdr.detectChanges();
+                });
+
+            })
+
+        ).subscribe({
+
+            next: details => {
+
+                this.ngZone.run(() => {
+
+                    this.selectedTmdbMovie = movie;
+                    this.selectedMovieDetails = details;
+
+                    // Reutiliza o cadastro já implementado.
+                    this.addSelectedMovieToList();
+
+                    this.cdr.detectChanges();
+
+                });
+
+            },
+
+            error: error => {
+
+                console.error(
+                    '[TMDB] Erro ao carregar filme para adicionar:',
+                    error
+                );
+
+                this.ngZone.run(() => {
+
+                    this.movieSearchError.set(
+                        'Não foi possível carregar os detalhes do filme.'
+                    );
+
+                    this.cdr.detectChanges();
+
+                });
+
+            }
+
+        });
+    }
+
+    removeMovieFromList(movie: DashboardMovie): void {
+
+        const user = this.currentUser;
+
+        if (!user || this.updatingMovieId) {
+            return;
+        }
+
+        const currentList = user.movieList ?? [];
+
+        // Remove somente a referência do filme na lista pessoal.
+        const updatedList: UserMovieEntry[] = currentList.filter(
+            entry => entry.movieId !== movie.id
+        );
+
+        // Verifica se o filme realmente estava na lista.
+        if (updatedList.length === currentList.length) {
+            return;
+        }
+
+        this.updatingMovieId = movie.id;
+        this.movieActionError.set('');
+
+        this.userService.updateUser(
+            user.id,
+            { movieList: updatedList }
+        ).pipe(
+
+            take(1),
+
+            finalize(() => {
+                this.ngZone.run(() => {
+                    this.updatingMovieId = null;
+                    this.cdr.detectChanges();
+                });
+            })
+
+        ).subscribe({
+
+            next: () => {
+
+                this.ngZone.run(() => {
+
+                    if (!this.currentUser) {
+                        return;
+                    }
+
+                    // Atualiza o usuário
+                    this.currentUser = {
+                        ...this.currentUser,
+                        movieList: updatedList
+                    };
+
+                    // Remove o filme da lista exibida
+                    this.movies = this.movies.filter(
+                        item => item.id !== movie.id
+                    );
+
+                    // Atualiza a sessão
+                    sessionStorage.setItem(
+                        'cinegroupUser',
+                        JSON.stringify(this.currentUser)
+                    );
+
+                    this.cdr.detectChanges();
+
+                });
+
+            },
+
+            error: error => {
+
+                console.error('[Dashboard] Erro ao remover filme:', error);
+
+                this.ngZone.run(() => {
+
+                    this.movieActionError.set(
+                        'Não foi possível remover o filme da sua lista.'
+                    );
+
+                    this.cdr.detectChanges();
+
+                });
+
+            }
+
+        });
+    }
     // =====================================================
     // PESQUISA DE FILMES NA TMDB
     // =====================================================
@@ -791,67 +881,148 @@ addTmdbMovieToList(movie: TmdbMovie): void {
     }
 
     // Alterna entre visto e não visto e salva no JSON Server
-    toggleMovieStatus(movie: DashboardMovie): void {
-        if (!this.currentUser || this.updatingMovieId) {
-            return;
+    
+toggleMovieStatus(movie: DashboardMovie): void {
+
+    const user = this.currentUser;
+
+    if (!user || this.updatingMovieId) {
+        return;
+    }
+
+    const nextStatus: MovieListStatus =
+        movie.status === 'watched'
+            ? 'want-to-watch'
+            : 'watched';
+
+    // Guarda o estado anterior para permitir desfazer em caso de erro.
+    const previousUser = user;
+    const previousMovies = this.movies;
+
+    // Prepara a nova lista do usuário.
+    const updatedList: UserMovieEntry[] = (user.movieList ?? []).map(entry => {
+
+        if (entry.movieId !== movie.id) {
+            return entry;
         }
 
-        const nextStatus: MovieListStatus =
-            movie.status === 'watched' ? 'want-to-watch' : 'watched';
+        return {
+            ...entry,
+            status: nextStatus,
+            watchedAt: nextStatus === 'watched'
+                ? new Date().toISOString()
+                : undefined
+        };
 
-        const updatedList = (this.currentUser.movieList ?? []).map(entry => {
+    });
 
-            if (entry.movieId !== movie.id) {
-                return entry;
-            }
+    // Prepara a lista atualizada do dashboard.
+    const updatedMovies: DashboardMovie[] = this.movies.map(item => {
 
-            return {
-                ...entry,
-                status: nextStatus,
-                watchedAt: nextStatus === 'watched'
-                    ? new Date().toISOString()
-                    : undefined
-            };
-        });
+        if (item.id !== movie.id) {
+            return item;
+        }
+
+        return {
+            ...item,
+            status: nextStatus
+        };
+
+    });
+
+    // =================================================
+    // ATUALIZAÇÃO IMEDIATA DA INTERFACE
+    // =================================================
+
+    this.ngZone.run(() => {
 
         this.updatingMovieId = movie.id;
+        this.movieActionError.set('');
 
-        this.userService.updateUser(
-            this.currentUser.id,
-            { movieList: updatedList }
-        ).subscribe({
+        this.currentUser = {
+            ...user,
+            movieList: updatedList
+        };
 
-            next: () => {
-                if (!this.currentUser) {
-                    return;
+        // Cria uma nova referência para a lista.
+        this.movies = updatedMovies;
+
+        this.cdr.detectChanges();
+
+    });
+
+    // =================================================
+    // SALVAMENTO NO JSON SERVER
+    // =================================================
+
+    this.userService.updateUser(
+        user.id,
+        { movieList: updatedList }
+    ).pipe(
+
+        take(1),
+
+        finalize(() => {
+
+            this.ngZone.run(() => {
+                this.updatingMovieId = null;
+                this.cdr.detectChanges();
+            });
+
+        })
+
+    ).subscribe({
+
+        next: () => {
+
+            this.ngZone.run(() => {
+
+                // Atualiza a sessão após confirmação do servidor.
+                if (this.currentUser) {
+                    sessionStorage.setItem(
+                        'cinegroupUser',
+                        JSON.stringify(this.currentUser)
+                    );
                 }
 
-                this.currentUser = {
-                    ...this.currentUser,
-                    movieList: updatedList
-                };
-
-                movie.status = nextStatus;
-
-                sessionStorage.setItem(
-                    'cinegroupUser',
-                    JSON.stringify(this.currentUser)
+                console.log(
+                    `[Dashboard] Filme "${movie.title}" atualizado para:`,
+                    nextStatus
                 );
 
-                this.updatingMovieId = null;
-            },
+                this.cdr.detectChanges();
 
-            error: error => {
-                console.error('Erro ao atualizar filme:', error);
+            });
 
-                this.errorMessage =
-                    'Não foi possível atualizar o status do filme.';
+        },
 
-                this.updatingMovieId = null;
-            }
+        error: error => {
 
-        });
-    }
+            console.error(
+                '[Dashboard] Erro ao atualizar filme:',
+                error
+            );
+
+            // Restaura os dados anteriores.
+            this.ngZone.run(() => {
+
+                this.currentUser = previousUser;
+                this.movies = previousMovies;
+
+                this.movieActionError.set(
+                    'Não foi possível atualizar o status do filme. A alteração foi desfeita.'
+                );
+
+                this.cdr.detectChanges();
+
+            });
+
+        }
+
+    });
+
+}
+
 
     // =====================================================
     // USUÁRIO

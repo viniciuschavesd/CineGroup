@@ -60,15 +60,9 @@
       "createdAt": "2026-11-23T00:44:12.584Z",
       "movieList": [
         {
-          "movieId": "929ebcc9-21fb-4cdd-9b83-74ea3f628e2e",
-          "status": "watched",
-          "addedAt": "2026-11-23T00:44:39.517Z",
-          "watchedAt": "2026-11-23T00:44:42.204Z"
-        },
-        {
-          "movieId": "158b50c0-d0a1-43d5-975b-16c98cca2998",
+          "movieId": "876a8953-73f3-4571-92eb-d16f7b5ccdcf",
           "status": "want-to-watch",
-          "addedAt": "2026-11-23T00:44:54.035Z"
+          "addedAt": "2026-11-23T01:14:37.798Z"
         }
       ]
     }
@@ -155,6 +149,28 @@
       ],
       "synopsis": "Depois de buscar as cinzas de seu marido na Alemanha, uma mulher retorna para sua casa no Vietnã. Em sua bagagem, ela carrega Cu Li, um lóris-pigmeu que herdou do falecido. Enquanto isso, sua jovem sobrinha se prepara para casar-se, devido a uma gravidez inesperada.",
       "id": "158b50c0-d0a1-43d5-975b-16c98cca2998"
+    },
+    {
+      "tmdbId": 11860,
+      "title": "Sabrina",
+      "director": "Sydney Pollack",
+      "releaseYear": 1995,
+      "posterUrl": "https://image.tmdb.org/t/p/w500/i8PbLJDPU7vCwwscWD625oHbJy.jpg",
+      "genres": [
+        "Romance",
+        "Comédia"
+      ],
+      "synopsis": "Sabrina é filha do chofer da rica família Larrabee. Ela passa dois anos em Paris e volta como uma mulher sofisticada, atraindo a atenção de David, o caçula dos Larrabee, por quem sempre foi apaixonada. Linus, o mais velho, tenta impedir o romance.",
+      "id": "e86aa0bd-3add-437e-96ca-c2fc2c03a283"
+    },
+    {
+      "tmdbId": 1362504,
+      "title": "WWE SummerSlam 2025: Domingo",
+      "director": "Não informado",
+      "releaseYear": 2025,
+      "posterUrl": "https://image.tmdb.org/t/p/w500/1fQz1Tdop0TA4HIDTDeHCDZEBxP.jpg",
+      "genres": [],
+      "id": "876a8953-73f3-4571-92eb-d16f7b5ccdcf"
     }
   ],
   "groups": [],
