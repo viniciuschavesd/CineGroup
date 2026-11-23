@@ -23,10 +23,141 @@
       "email": "pedrin@adc.com",
       "password": "123456789",
       "createdAt": "2026-11-22T20:47:19.284Z",
-      "movieList": []
+      "movieList": [
+        {
+          "movieId": "5102c43a-086d-4e23-8800-379637f4d420",
+          "status": "want-to-watch",
+          "addedAt": "2026-11-22T23:59:24.112Z"
+        },
+        {
+          "movieId": "c5a615dd-bb00-4d38-96e4-0ece8ab813e1",
+          "status": "want-to-watch",
+          "addedAt": "2026-11-23T00:00:25.828Z"
+        },
+        {
+          "movieId": "18961a9a-a31e-4fbd-8d43-08d3449fa043",
+          "status": "want-to-watch",
+          "addedAt": "2026-11-23T00:35:04.492Z"
+        },
+        {
+          "movieId": "e05d41b1-f16e-4802-949d-0353d65dd970",
+          "status": "want-to-watch",
+          "addedAt": "2026-11-23T00:37:08.261Z"
+        },
+        {
+          "movieId": "89d928dd-a5f6-453b-995a-c15c6ccfcf43",
+          "status": "want-to-watch",
+          "addedAt": "2026-11-23T00:38:10.258Z"
+        }
+      ]
+    },
+    {
+      "id": "6c03d7ab-4389-4f00-8b59-ff5827d88445",
+      "name": "adler",
+      "user": "adler",
+      "email": "adler",
+      "password": "123456789",
+      "createdAt": "2026-11-23T00:44:12.584Z",
+      "movieList": [
+        {
+          "movieId": "929ebcc9-21fb-4cdd-9b83-74ea3f628e2e",
+          "status": "watched",
+          "addedAt": "2026-11-23T00:44:39.517Z",
+          "watchedAt": "2026-11-23T00:44:42.204Z"
+        },
+        {
+          "movieId": "158b50c0-d0a1-43d5-975b-16c98cca2998",
+          "status": "watched",
+          "addedAt": "2026-11-23T00:44:54.035Z",
+          "watchedAt": "2026-11-23T00:45:37.619Z"
+        }
+      ]
     }
   ],
-  "movies": [],
+  "movies": [
+    {
+      "tmdbId": 1768657,
+      "title": "Interstelar",
+      "director": "Sergey A.",
+      "releaseYear": 2014,
+      "posterUrl": "https://image.tmdb.org/t/p/w500/itGoDeFoaCrqSNXlNqN1AmAwtvh.jpg",
+      "genres": [
+        "Ficção científica"
+      ],
+      "id": "5102c43a-086d-4e23-8800-379637f4d420"
+    },
+    {
+      "tmdbId": 8966,
+      "title": "Crepúsculo",
+      "director": "Catherine Hardwicke",
+      "releaseYear": 2008,
+      "posterUrl": "https://image.tmdb.org/t/p/w500/o4ki1gYHkP6IWNdwjHvI9vzfpuC.jpg",
+      "genres": [
+        "Fantasia",
+        "Drama",
+        "Romance"
+      ],
+      "synopsis": "Isabella Swan é uma adolescente que vai morar com seu pai em uma nova cidade depois que sua mãe decide casar-se novamente. No colégio, ela fica fascinada por Edward Cullen, um garoto que esconde um segredo obscuro. Eles se apaixonam, mas Edward sabe que quanto mais avançam no relacionamento, mais ele está colocando Bella e aqueles à sua volta em perigo.",
+      "id": "c5a615dd-bb00-4d38-96e4-0ece8ab813e1"
+    },
+    {
+      "tmdbId": 327593,
+      "title": "WWE WrestleMania 31",
+      "director": "Kevin Dunn",
+      "releaseYear": 2015,
+      "posterUrl": "https://image.tmdb.org/t/p/w500/yG5IDpGZzDV5MnOVbRIiS4zCF5U.jpg",
+      "genres": [
+        "Ação"
+      ],
+      "id": "18961a9a-a31e-4fbd-8d43-08d3449fa043"
+    },
+    {
+      "tmdbId": 1684979,
+      "title": "asd",
+      "director": "Não informado",
+      "releaseYear": 0,
+      "genres": [],
+      "id": "e05d41b1-f16e-4802-949d-0353d65dd970"
+    },
+    {
+      "tmdbId": 912649,
+      "title": "Venom: A Última Rodada",
+      "director": "Kelly Marcel",
+      "releaseYear": 2024,
+      "posterUrl": "https://image.tmdb.org/t/p/w500/eZIIPjL7oGqfmF7Gw5ZnbDjH6yu.jpg",
+      "genres": [
+        "Ficção científica",
+        "Ação",
+        "Aventura"
+      ],
+      "synopsis": "Eddie e Venom estão fugindo. Perseguidos pelos dois mundos, a dupla é forçada a tomar uma decisão devastadora que vai fechar as cortinas da última rodada de Venom e Eddie.",
+      "id": "89d928dd-a5f6-453b-995a-c15c6ccfcf43"
+    },
+    {
+      "tmdbId": 1093094,
+      "title": "CU: Farewell",
+      "director": "Anar Azimov",
+      "releaseYear": 2021,
+      "posterUrl": "https://image.tmdb.org/t/p/w500/x7A1S1oQVCRT2n7MGrLFdNI6onI.jpg",
+      "genres": [
+        "Drama",
+        "Thriller"
+      ],
+      "id": "929ebcc9-21fb-4cdd-9b83-74ea3f628e2e"
+    },
+    {
+      "tmdbId": 643776,
+      "title": "Cu Li Nunca Chora",
+      "director": "Phạm Ngọc Lân",
+      "releaseYear": 2024,
+      "posterUrl": "https://image.tmdb.org/t/p/w500/le10dGiFpL3SJ5VXsTCuod52ZRO.jpg",
+      "genres": [
+        "Drama"
+      ],
+      "synopsis": "Depois de buscar as cinzas de seu marido na Alemanha, uma mulher retorna para sua casa no Vietnã. Em sua bagagem, ela carrega Cu Li, um lóris-pigmeu que herdou do falecido. Enquanto isso, sua jovem sobrinha se prepara para casar-se, devido a uma gravidez inesperada.",
+      "id": "158b50c0-d0a1-43d5-975b-16c98cca2998"
+    }
+  ],
   "groups": [],
   "moviePosts": []
 }

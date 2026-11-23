@@ -36,7 +36,7 @@ export interface TmdbMovieDetails {
   release_date: string;
   genres: TmdbGenre[];
   runtime: number | null;
-
+  vote_average: number;
   credits: {
     crew: TmdbCrewMember[];
   };

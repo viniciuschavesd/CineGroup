@@ -1,18 +1,22 @@
-
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-
 import {
     Component,
     OnInit,
     ChangeDetectorRef,
+    DestroyRef,
+    signal,
+    NgZone,
     inject
 } from '@angular/core';
 
-import { Router, RouterModule } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import {
     catchError,
+    debounceTime,
     defaultIfEmpty,
+    distinctUntilChanged,
     finalize,
     forkJoin,
     map,
@@ -20,7 +24,9 @@ import {
     switchMap,
     take,
     throwError,
-    timeout
+    timeout,
+    timer,
+    Subject
 } from 'rxjs';
 
 import { CINEGROUP_ICONS } from '../icons/icons';
@@ -71,19 +77,23 @@ interface DashboardGroup extends Group {
 })
 export class Dashboard implements OnInit {
 
-    private userService = inject(UserService);
-    private movieService = inject(MovieService);
-    private groupService = inject(GroupService);
-    private moviePostService = inject(MoviePostService);
-    private router = inject(Router);
-    private cdr = inject(ChangeDetectorRef);
-    private tmdbService = inject(TmdbService);
+private userService = inject(UserService);
+private movieService = inject(MovieService);
+private groupService = inject(GroupService);
+private moviePostService = inject(MoviePostService);
+private router = inject(Router);
+private cdr = inject(ChangeDetectorRef);
+private tmdbService = inject(TmdbService);
+private destroyRef = inject(DestroyRef);
+private movieSearchSubject = new Subject<string>();
+private ngZone = inject(NgZone);
+
 
     currentUser: User | null = null;
 
     movies: DashboardMovie[] = [];
     groups: DashboardGroup[] = [];
-
+    addingTmdbMovieId: number | null = null;
     activeFilter: MovieFilter = 'all';
 
     loading = true;
@@ -94,11 +104,12 @@ export class Dashboard implements OnInit {
     isMovieSearchOpen = false;
 
     movieSearchQuery = '';
-    tmdbResults: TmdbMovie[] = [];
 
-    isSearchingMovies = false;
-    movieSearchPerformed = false;
-    movieSearchError = '';
+    tmdbResults = signal<TmdbMovie[]>([]);
+
+    isSearchingMovies = signal(false);
+    movieSearchPerformed = signal(false);
+    movieSearchError = signal('');
 
     // Filme selecionado
     selectedTmdbMovie: TmdbMovie | null = null;
@@ -108,6 +119,7 @@ export class Dashboard implements OnInit {
     isSavingMovie = false;
 
     ngOnInit(): void {
+        this.configureMovieSearch();
         this.loadDashboard();
     }
 
@@ -127,6 +139,94 @@ export class Dashboard implements OnInit {
         }
     }
 
+    // Captura o texto digitado e dispara a pesquisa automática
+    onMovieSearchInput(event: Event): void {
+
+        const input = event.target as HTMLInputElement;
+
+        this.movieSearchQuery = input.value;
+
+        // Limpa os resultados anteriores
+        this.tmdbResults.set([]);
+        this.movieSearchPerformed.set(false);
+        this.movieSearchError.set('');
+
+        // Limpa o filme selecionado
+        this.selectedTmdbMovie = null;
+        this.selectedMovieDetails = null;
+
+        // Envia o texto para a pesquisa automática
+        this.movieSearchSubject.next(this.movieSearchQuery);
+    }
+
+    private configureMovieSearch(): void {
+
+        this.movieSearchSubject.pipe(
+
+            map(query => query.trim()),
+            debounceTime(400),
+            distinctUntilChanged(),
+
+            switchMap(query => {
+
+                // Pesquisa vazia ou muito curta
+                if (query.length < 2) {
+
+                    this.tmdbResults.set([]);
+                    this.movieSearchPerformed.set(false);
+                    this.isSearchingMovies.set(false);
+                    this.movieSearchError.set('');
+
+                    return of(null);
+                }
+
+                // Inicia o carregamento
+                this.isSearchingMovies.set(true);
+                this.movieSearchError.set('');
+
+                console.log('[TMDB] Pesquisando:', query);
+
+                return this.tmdbService.searchMovies(query).pipe(
+
+                    take(1),
+
+                    catchError(error => {
+
+                        console.error('[TMDB] Erro na pesquisa:', error);
+
+                        this.tmdbResults.set([]);
+                        this.movieSearchPerformed.set(true);
+
+                        this.movieSearchError.set(
+                            'Não foi possível pesquisar os filmes. Verifique sua conexão e tente novamente.'
+                        );
+
+                        return of(null);
+                    }),
+
+                    finalize(() => {
+                        this.isSearchingMovies.set(false);
+                    })
+
+                );
+
+            }),
+
+            takeUntilDestroyed(this.destroyRef)
+
+        ).subscribe(response => {
+
+            if (!response) {
+                return;
+            }
+
+            console.log('[TMDB] Resultados recebidos:', response.results);
+
+            this.tmdbResults.set(response.results ?? []);
+            this.movieSearchPerformed.set(true);
+
+        });
+    }
     // Carrega as informações do dashboard
     loadDashboard(): void {
         const userId = this.getSessionUserId();
@@ -275,94 +375,126 @@ export class Dashboard implements OnInit {
 
         });
     }
+    // Verifica se o filme já está na lista pessoal
+    isTmdbMovieInList(movie: TmdbMovie): boolean {
 
+        return this.movies.some(
+            item => item.tmdbId === movie.id
+        );
+
+    }
+
+
+// Adiciona diretamente um resultado da pesquisa
+addTmdbMovieToList(movie: TmdbMovie): void {
+
+    if (
+        !this.currentUser ||
+        this.isSavingMovie ||
+        this.addingTmdbMovieId !== null
+    ) {
+        return;
+    }
+
+    if (this.isTmdbMovieInList(movie)) {
+        return;
+    }
+
+    this.addingTmdbMovieId = movie.id;
+    this.movieSearchError.set('');
+
+    this.tmdbService.getMovieDetails(movie.id).pipe(
+
+        take(1),
+
+        finalize(() => {
+
+            this.ngZone.run(() => {
+                this.addingTmdbMovieId = null;
+                this.cdr.detectChanges();
+            });
+
+        })
+
+    ).subscribe({
+
+        next: details => {
+
+            this.ngZone.run(() => {
+
+                this.selectedTmdbMovie = movie;
+                this.selectedMovieDetails = details;
+
+                // Reutiliza o cadastro já implementado.
+                this.addSelectedMovieToList();
+
+                this.cdr.detectChanges();
+
+            });
+
+        },
+
+        error: error => {
+
+            console.error(
+                '[TMDB] Erro ao carregar filme para adicionar:',
+                error
+            );
+
+            this.ngZone.run(() => {
+
+                this.movieSearchError.set(
+                    'Não foi possível carregar os detalhes do filme.'
+                );
+
+                this.cdr.detectChanges();
+
+            });
+
+        }
+
+    });
+}
     // =====================================================
     // PESQUISA DE FILMES NA TMDB
     // =====================================================
 
     openMovieSearch(): void {
-        this.movieSearchQuery = '';
-        this.tmdbResults = [];
 
-        this.movieSearchPerformed = false;
-        this.movieSearchError = '';
+        this.movieSearchQuery = '';
+
+        this.movieSearchSubject.next('');
+
+        this.tmdbResults.set([]);
+        this.movieSearchPerformed.set(false);
+        this.movieSearchError.set('');
 
         this.selectedTmdbMovie = null;
         this.selectedMovieDetails = null;
+
+        this.isSearchingMovies.set(false);
+        this.isLoadingMovieDetails = false;
 
         this.isMovieSearchOpen = true;
     }
 
     closeMovieSearch(): void {
+
         if (this.isSavingMovie) {
             return;
         }
 
+        this.movieSearchSubject.next('');
+
+        this.movieSearchQuery = '';
+
+        this.tmdbResults.set([]);
+        this.movieSearchPerformed.set(false);
+        this.movieSearchError.set('');
+
         this.isMovieSearchOpen = false;
     }
 
-    onMovieSearchInput(event: Event): void {
-        const input = event.target as HTMLInputElement;
-
-        this.movieSearchQuery = input.value;
-
-        // Evita manter resultados de uma pesquisa anterior
-        this.tmdbResults = [];
-        this.movieSearchPerformed = false;
-
-        this.selectedTmdbMovie = null;
-        this.selectedMovieDetails = null;
-
-        this.movieSearchError = '';
-    }
-
-    searchTmdbMovies(): void {
-        const query = this.movieSearchQuery.trim();
-
-        if (query.length < 2) {
-            this.movieSearchError =
-                'Digite pelo menos dois caracteres para pesquisar.';
-
-            return;
-        }
-
-        if (this.isSearchingMovies) {
-            return;
-        }
-
-        this.isSearchingMovies = true;
-        this.movieSearchError = '';
-        this.movieSearchPerformed = false;
-
-        this.tmdbResults = [];
-        this.selectedTmdbMovie = null;
-        this.selectedMovieDetails = null;
-
-        this.tmdbService.searchMovies(query).pipe(
-
-            take(1),
-
-            finalize(() => {
-                this.isSearchingMovies = false;
-                this.cdr.detectChanges();
-            })
-
-        ).subscribe({
-
-            next: response => {
-                this.tmdbResults = response.results ?? [];
-                this.movieSearchPerformed = true;
-            },
-
-            error: error => {
-                console.error('[TMDB] Erro na pesquisa:', error);
-
-                this.movieSearchError =
-                    'Não foi possível pesquisar os filmes. Verifique sua conexão e tente novamente.';
-            }
-
-        });
-    }
 
     // =====================================================
     // SELEÇÃO E DETALHES DO FILME
@@ -372,7 +504,7 @@ export class Dashboard implements OnInit {
         this.selectedTmdbMovie = movie;
         this.selectedMovieDetails = null;
 
-        this.movieSearchError = '';
+        this.movieSearchError.set('');
         this.isLoadingMovieDetails = true;
 
         this.tmdbService.getMovieDetails(movie.id).pipe(
@@ -393,8 +525,7 @@ export class Dashboard implements OnInit {
             error: error => {
                 console.error('[TMDB] Erro ao buscar detalhes:', error);
 
-                this.movieSearchError =
-                    'Não foi possível carregar os detalhes deste filme.';
+                this.movieSearchError.set('Não foi possível carregar os detalhes deste filme.');
             }
 
         });
@@ -451,6 +582,7 @@ export class Dashboard implements OnInit {
     // ADICIONAR FILME À LISTA PESSOAL
     // =====================================================
 
+
     addSelectedMovieToList(): void {
         const details = this.selectedMovieDetails;
         const user = this.currentUser;
@@ -460,14 +592,13 @@ export class Dashboard implements OnInit {
         }
 
         if (this.isSelectedMovieAlreadyInList) {
-            this.movieSearchError =
-                'Este filme já está na sua lista.';
+            this.movieSearchError.set('Este filme já está na sua lista.');
 
             return;
         }
 
         this.isSavingMovie = true;
-        this.movieSearchError = '';
+        this.movieSearchError.set('');
 
         // Primeiro verifica se o filme já existe no catálogo.
         this.movieService.getMovies().pipe(
@@ -619,8 +750,7 @@ export class Dashboard implements OnInit {
             error: error => {
                 console.error('[Dashboard] Erro ao adicionar filme:', error);
 
-                this.movieSearchError =
-                    'Não foi possível adicionar o filme. Verifique se o JSON Server está funcionando.';
+                this.movieSearchError.set('Não foi possível adicionar o filme. Verifique se o JSON Server está funcionando.');
             }
 
         });
