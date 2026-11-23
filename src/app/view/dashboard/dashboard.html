@@ -55,15 +55,8 @@
 
         </nav>
 
-        <div class="cg-dashboard-profile">
+        <app-profile-menu [user]="currentUser" />
 
-            <div class="cg-dashboard-avatar">
-                {{ userInitials }}
-            </div>
-
-            <app-profile-menu [user]="currentUser" />
-
-        </div>
 
     </header>
 

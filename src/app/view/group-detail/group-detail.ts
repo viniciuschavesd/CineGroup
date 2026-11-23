@@ -18,7 +18,7 @@ import {
 } from '@angular/router';
 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-
+import { ProfileMenu } from '../../components/profile-menu/profile-menu';
 import {
     catchError,
     debounceTime,
@@ -69,6 +69,7 @@ interface GroupPostView {
     imports: [
         CommonModule,
         RouterModule,
+        ProfileMenu,
         ...CINEGROUP_ICONS
     ],
     templateUrl: './group-detail.html',
